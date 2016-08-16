@@ -1,5 +1,6 @@
-#Load the wordnet corpus
+
 from nltk.corpus import wordnet as wn
+#from porterStem 
 
 class WSD:
 	'''
@@ -90,6 +91,65 @@ class WSD:
 
 	'''
 	def __init__(self):
+		self.document = []
+		self.sentence = []
+		self.query = []
+		self.stop_word = ['I', 'a', 'an', 'as', 'at', 'by',
+		 				'he', 'his', 'me', 'or', 'thou', 
+		 				'us', 'who', 'of', 'and', 'the', 'she']
 
-if "__name__" == "__main__":
+	def get_document(self, docs):
+		self.document = docs
+
+	def get_sentence(self, sentence):
+		self.sentence = sentence
+
+	def get_query(self, query):
+		self.query = query
+
+	def parse_sentence(self, docs):
+		'''
+			1) get docs
+			2) parse into sentences.
+			3) store each sentence to sentence = []
+			4) return a list of sentences 
+		'''
+
+	def word_tagger(self, sentence):
+		'''
+			1) get a sentence
+			2) tag each word in the sentence.
+			3) return a dictionary {word: it's POS}
+		'''
+
+	def context_window(self, window_size=3):
+		'''
+			1) fixed window size of 3 
+			2) return a list [Non-target-word, Target-word, Non-target-word]
+
+		'''
+	def score_sense(self, sense):
+		'''
+			1) use square score method
+		'''
+
+	def hypo_concat(self, word):
+		'''
+			return a string that is concatenation of
+			gloss of hyponyms
+		'''
+
+	def hype_concat(self, word):
+		'''
+			returna string that is concatenation of
+			gloss of hypernym
+		'''
+
+	def sense_combination(self, senses):
+		'''
+			return a list of possible sense combination
+		'''
+
+
+if __name__ == "__main__":
 	wsd = WSD()
