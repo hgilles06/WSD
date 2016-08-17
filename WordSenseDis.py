@@ -15,6 +15,13 @@ class WSD:
 			2)
 
 		Desc:
+			
+			Step
+				1) Sentence tokenize
+				2) word tokenize
+				3) word tagger using Brill's tagger trained on Brown Corpus
+				4) Stem word
+				
 
 			TW = target word
 
