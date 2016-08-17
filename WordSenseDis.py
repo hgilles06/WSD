@@ -1,64 +1,65 @@
 
 from nltk.corpus import wordnet as wn
-#from porterStem 
+from nltk.tokenize import sent_tokenize, word_tokenize
+#from StemWord import stem_word
 
 class WSD:
 	'''
 		Modified Lesk Algorithm
-		
-		ref: 
+
+		ref:
 			1) Adapted Lesk Algorithm for WSD by S. Banerjee
 			www.d.umn.edu/~tpederse/Pubs/banerjee.pdf
 
-			2) 
-		
+			2)
+
 		Desc:
 
 			TW = target word
 
 			Setting up a context window
 			1) Set a context window around a target word
-				a. window size of 2 * n + 1 around the target, 
+				a. window size of 2 * n + 1 around the target,
 			    n words to its left and right. I will choose
 			    the window size as 3. so n = 1.
 
 			    We could have chosed larger context window, but
 			    it's going to be computationally intense.
 
-			    We don't select the word if it belong to 
+			    We don't select the word if it belong to
 			    {I, a, an, as, at, by, he, his, me, or, thou, us, who}
-			
+
 			2) Pass every word in this context window into
 			the program.
-			
-			3) Words that do not occur in the WordNet will 
+
+			3) Words that do not occur in the WordNet will
 			be ignored..
-			
-			4) If not enough word exist to TW's right and left, 
+
+			4) If not enough word exist to TW's right and left,
 			then add words from the other direction.
-			
+
 			Comparing the senses of words
-			
+
 			1) We need to compute a score for every combination of sense of words
 			in the context window.
-				
+
 				a = 1st word
 				b = 2nd word
 				c = 3rd word
 
 				a_1 = 1st word's 1st sense
 				a_2 = 1st word's 2nd sense
-				
+
 				b_1, b_2 = 2nd word's 1st and 2nd sense
 				c_1, c_2 = 3rd word's 1st and 2nd sense
-				
+
 				total of 8 combinations
 				2 x 2 x 2 = 8
 
 				possible combination
 					1) a_1 - b_1 - c_1    T T T
 					2) a_1 - b_1 - c_2    T T F
-					3) a_1 - b_2 - c_1    T F T 
+					3) a_1 - b_2 - c_1    T F T
 					4) a_1 - b_2 - c_2    T F F
 					5) a_2 - b_2 - c_2    F F F
 					6) a_2 - b_2 - c_1    F F T
@@ -68,17 +69,17 @@ class WSD:
 			Word's hyponyms and hypernyms, put them into a concatanated
 			string.
 
-			ex. synset('conviction.n.02').hyponyms() 
+			ex. synset('conviction.n.02').hyponyms()
 			-> {murder convition}, {robbery conviction}, {rape conviction}
 			then put their definition into one string
 			concat_str = "conviction for murder; conviction for robbery; conviction for rape"
 
 			2) Compare the gloss of each sense of the target word with
 			concatenated glosses of all other words in the context window.
-			
+
 			Scoring mechanism
 			1) number of words found to be common between two strings is the
-			score of the sense of the TW, but use a square method 
+			score of the sense of the TW, but use a square method
 			if 2 tokens matched then 2^2 = 4 scores
 			if 3 tokens matched then 3^3 = 9 scores
 			And these words in these tokens have to be in consecutive order.
@@ -86,7 +87,7 @@ class WSD:
 
 			2) The sense with the highest score is the most appropriate sense
 			for that TW.
-			 
+
 
 
 	'''
@@ -95,7 +96,7 @@ class WSD:
 		self.sentence = []
 		self.query = []
 		self.stop_word = ['I', 'a', 'an', 'as', 'at', 'by',
-		 				'he', 'his', 'me', 'or', 'thou', 
+		 				'he', 'his', 'me', 'or', 'thou',
 		 				'us', 'who', 'of', 'and', 'the', 'she']
 
 	def get_document(self, docs):
@@ -107,13 +108,13 @@ class WSD:
 	def get_query(self, query):
 		self.query = query
 
-	def parse_sentence(self, docs):
-		'''
-			1) get docs
-			2) parse into sentences.
-			3) store each sentence to sentence = []
-			4) return a list of sentences 
-		'''
+	def tokenize_sen(self, docs):
+		sentence_list = sent_tokenize(docs)
+		return sentence_list
+
+	def tokenize_word(self, sen_list):
+		word_token_list = [word_tokenize(sen) for sen in sen_list]
+		return word_token_list
 
 	def word_tagger(self, sentence):
 		'''
@@ -121,35 +122,41 @@ class WSD:
 			2) tag each word in the sentence.
 			3) return a dictionary {word: it's POS}
 		'''
-
+		return None
 	def context_window(self, window_size=3):
 		'''
-			1) fixed window size of 3 
+			1) fixed window size of 3
 			2) return a list [Non-target-word, Target-word, Non-target-word]
 
 		'''
+		return None
 	def score_sense(self, sense):
 		'''
 			1) use square score method
 		'''
-
+		return None
 	def hypo_concat(self, word):
 		'''
 			return a string that is concatenation of
 			gloss of hyponyms
 		'''
-
+		return None
 	def hype_concat(self, word):
 		'''
 			returna string that is concatenation of
 			gloss of hypernym
 		'''
-
+		return None
 	def sense_combination(self, senses):
 		'''
 			return a list of possible sense combination
 		'''
+		return None
 
 
 if __name__ == "__main__":
 	wsd = WSD()
+	user_input = raw_input()
+	sen_list = wsd.tokenize_sen(user_input)
+	word_list = wsd.tokenize_word(sen_list)
+	print word_list
