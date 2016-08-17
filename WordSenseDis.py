@@ -1,7 +1,8 @@
 
 from nltk.corpus import wordnet as wn
 from nltk.tokenize import sent_tokenize, word_tokenize
-#from StemWord import stem_word
+from PorterStem import StemWord as sw
+import re
 
 class WSD:
 	'''
@@ -97,7 +98,8 @@ class WSD:
 		self.query = []
 		self.stop_word = ['I', 'a', 'an', 'as', 'at', 'by',
 		 				'he', 'his', 'me', 'or', 'thou',
-		 				'us', 'who', 'of', 'and', 'the', 'she']
+		 				'us', 'who', 'of', 'and', 'the', 'she', 
+		 				'this', 'that', 'these', 'those']
 
 	def get_document(self, docs):
 		self.document = docs
@@ -116,6 +118,12 @@ class WSD:
 		word_token_list = [word_tokenize(sen) for sen in sen_list]
 		return word_token_list
 
+	def porter_stem(self, sen_list):
+		for sen in sen_list:
+			for word in sen:
+				#if (word is not '.') and (word is not ',') and (word is not'!'): 
+				#	print sw().do_stem(word.upper())
+				print word
 	def word_tagger(self, sentence):
 		'''
 			1) get a sentence
@@ -159,4 +167,4 @@ if __name__ == "__main__":
 	user_input = raw_input()
 	sen_list = wsd.tokenize_sen(user_input)
 	word_list = wsd.tokenize_word(sen_list)
-	print word_list
+	wsd.porter_stem(word_list)

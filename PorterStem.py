@@ -26,7 +26,6 @@ class StemWord:
         # * is greedy and ?* is non greedy
         # result is list of tuple
         result = re.findall(r'^(.*?)(SSES|IES|SS|S)$', word)
-        #print result[0][0]
 
         if len(result) == 0:
             return word
@@ -73,12 +72,12 @@ class StemWord:
 
         # to get the consonant and vowel of stem
         stem_consonant = (self.to_consonant_vowel(result[0][0])).values()[0]
-        #print stem_consonant
+        print stem_consonant
 
         # get the count of VC in stem
         str_to_count = 'VC'
         m = stem_consonant.count(str_to_count)
-        #print m
+        print m
 
         # case maps to (m > 0) EED -> EE
         if ( (m > 0) and (result[0][1] == 'EED') ):
@@ -157,7 +156,7 @@ class StemWord:
 
         stem_str = rule_1[0][0]
         stem_consonant = self.to_consonant_vowel(stem_str)
-        #print stem_consonant
+        print stem_consonant
 
         if ( (stem_consonant.values()[0]).count('V') > 0):
             return stem_consonant.keys()[0] + 'I'
@@ -396,7 +395,7 @@ class StemWord:
         return norm_dict
 
     def normalize_list(self, consonant_vowel_list):
-        #print consonant_vowel_list
+        print consonant_vowel_list
 
         '''
             Have to reduce the list
@@ -419,8 +418,8 @@ class StemWord:
 
         return ret_list
 
-    def stem_word(self, word):
-        step_1a = self.step_1a(wor)
+    def do_stem(self, word):
+        step_1a = self.step_1a(word)
         step_1b = self.step_1b(step_1a)
         step_1c = self.step_1c(step_1b)
         step_2 = self.step_2(step_1c)
@@ -435,7 +434,7 @@ if __name__ == "__main__":
     sw = StemWord()
 
     step_1a = sw.step_1a(str(user_input))
-    # print stem_1a
+    #print stem_1a
 
     step_1b = sw.step_1b(step_1a)
     #print stem_1b
