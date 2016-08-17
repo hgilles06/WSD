@@ -42,8 +42,8 @@ class StemWord:
         elif ( suffix == 'S'):
             stem = stem
         else:
-            print >> sys.stderr, 'No mapping found in step 1a'
-
+            #print >> sys.stderr, 'No mapping found in step 1a'
+            pass
         return stem
 
     def step_1b(self, word):
@@ -57,7 +57,7 @@ class StemWord:
         '''
 
         consonant_vowel_dict = self.to_consonant_vowel(word)
-        print >> sys.stderr, consonant_vowel_dict
+        #print >> sys.stderr, consonant_vowel_dict
 
         # which rule does the word map to ??
         result = re.findall(r'^(.*?)(EED|ED|ING)$', consonant_vowel_dict.keys()[0])
@@ -72,12 +72,12 @@ class StemWord:
 
         # to get the consonant and vowel of stem
         stem_consonant = (self.to_consonant_vowel(result[0][0])).values()[0]
-        print stem_consonant
+        #print stem_consonant
 
         # get the count of VC in stem
         str_to_count = 'VC'
         m = stem_consonant.count(str_to_count)
-        print m
+        #print m
 
         # case maps to (m > 0) EED -> EE
         if ( (m > 0) and (result[0][1] == 'EED') ):
@@ -93,18 +93,20 @@ class StemWord:
                 ret_word = result[0][0]
                 second_or_third = True
         else:
-            print >> sys.stderr, 'No matching found in step 1b'
+            #print >> sys.stderr, 'No matching found in step 1b'
+            pass
 
         if (second_or_third is not True):
             return word
 
         #case with AT -> ATE
-        print >> sys.stderr, 'rule_123 ...'
+        #print >> sys.stderr, 'rule_123 ...'
         rule_123 = re.findall(r'^(.*?)(AT|BL|IZ)$', ret_word)
-        print >> sys.stderr, rule_123
+        #print >> sys.stderr, rule_123
 
         if ( len(rule_123) == 0 ):
-            print >> sys.stderr, 'go to rule 4'
+            #print >> sys.stderr, 'go to rule 4'
+            pass
         elif ( rule_123[0][1] == 'AT' ):
             return rule_123[0][0] + 'ATE'
         elif( rule_123[0][1] == 'BL'):
@@ -117,9 +119,10 @@ class StemWord:
         rule_4 = re.findall(r'^(.*?)(AA|BB|CC|DD|EE|FF|GG|HH|II|JJ|KK|LL|MM|NN|OO|PP|QQ|RR|SS|TT|UU|VV|WW|XX|YY|ZZ)$', ret_word)
 
         if (len(rule_4) ==0 ):
-            print >> sys.stderr, 'No matching for rule 4'
+            #print >> sys.stderr, 'No matching for rule 4'
+            pass
         elif ( (len(rule_4) > 0) and ((rule_4[0][1] != 'LL') and (rule_4[0][1] != 'SS') and (rule_4[0][1] != 'ZZ'))):
-            print >> sys.stderr, rule_4[0][1]
+            #print >> sys.stderr, rule_4[0][1]
             return rule_4[0][0] + rule_4[0][1][0]
 
         # rule5: (m=1 and *o) -> E
@@ -128,12 +131,12 @@ class StemWord:
         stem = self.to_consonant_vowel(ret_word, True)
 
         rule_5 = re.findall(r'^(.*?)(CVC)$', stem.values()[0])
-        print >> sys.stderr, rule_5
+        #print >> sys.stderr, rule_5
 
         if ( len(rule_5) > 0 ):
             # reduce the consonant_vowel
             norm_list = self.normalize_list(stem.values()[0])
-            print >> sys.stderr, norm_list
+            #print >> sys.stderr, norm_list
             m = (''.join(norm_list)).count('VC')
             if ( m == 1):
                 ret_word = stem.keys()[0] + 'E'
@@ -156,7 +159,7 @@ class StemWord:
 
         stem_str = rule_1[0][0]
         stem_consonant = self.to_consonant_vowel(stem_str)
-        print stem_consonant
+        #print stem_consonant
 
         if ( (stem_consonant.values()[0]).count('V') > 0):
             return stem_consonant.keys()[0] + 'I'
@@ -190,7 +193,7 @@ class StemWord:
         '''
         count = False
         parse_stem = re.findall(r'^(.*?)(ATIONAL|TIONAL|ENCI|ANCI|IZER|ABLI|ALLI|ENTLI|ELI|OUSLI|IZATION|ATION|ATOR|ALISM|IVENESS|FULNESS|OUSNESS|ALITI|IVITI|BILITI)$', word)
-        print parse_stem
+        #print parse_stem
         if len(parse_stem) == 0:
             return word
         else:
@@ -249,7 +252,7 @@ class StemWord:
         if len(parse_stem) == 0:
             return word
 
-        print parse_stem
+        #print parse_stem
         stem_consoant = self.to_consonant_vowel(parse_stem[0][0])
         m = (stem_consoant.values()[0]).count('VC')
 
@@ -291,7 +294,7 @@ class StemWord:
         '''
         parse_stem = re.findall(r'^(.*?)(AL|ANCE|ENCE|ER|IC|ABLE|IBLE|ANT|EMENT|MENT|ENT|OU|ISM|ATE|ITI|OUS|IVE|IZE|ION)$', word)
 
-        print parse_stem
+        #print parse_stem
         if len(parse_stem) == 0:
             return word
 
@@ -395,7 +398,7 @@ class StemWord:
         return norm_dict
 
     def normalize_list(self, consonant_vowel_list):
-        print consonant_vowel_list
+        #print consonant_vowel_list
 
         '''
             Have to reduce the list

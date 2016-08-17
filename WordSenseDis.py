@@ -99,7 +99,8 @@ class WSD:
 		self.stop_word = ['I', 'a', 'an', 'as', 'at', 'by',
 		 				'he', 'his', 'me', 'or', 'thou',
 		 				'us', 'who', 'of', 'and', 'the', 'she', 
-		 				'this', 'that', 'these', 'those']
+		 				'this', 'that', 'these', 'those', 'is']
+		self.symbols = ['>','<','.',',','!','?','-','\'']
 
 	def get_document(self, docs):
 		self.document = docs
@@ -119,11 +120,14 @@ class WSD:
 		return word_token_list
 
 	def porter_stem(self, sen_list):
+		stem_dict = {}
 		for sen in sen_list:
 			for word in sen:
-				#if (word is not '.') and (word is not ',') and (word is not'!'): 
-				#	print sw().do_stem(word.upper())
-				print word
+				if (word not in self.stop_word) and (word not in self.symbols): 
+					stem_dict[word] = sw().do_stem(word.upper())
+
+		return stem_dict
+
 	def word_tagger(self, sentence):
 		'''
 			1) get a sentence
@@ -167,4 +171,4 @@ if __name__ == "__main__":
 	user_input = raw_input()
 	sen_list = wsd.tokenize_sen(user_input)
 	word_list = wsd.tokenize_word(sen_list)
-	wsd.porter_stem(word_list)
+	print wsd.porter_stem(word_list)
