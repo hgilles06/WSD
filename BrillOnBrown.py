@@ -6,10 +6,32 @@
 	to what words. It is a supervised technique; it assumes there is
 	pre-tagged training corpus.
 '''
+'''
+	how to save and load trained tagger
+   
+	import pickle
+
+	# save
+	f = open('tagger.pickle', 'wb')
+	pickle.dump(tagger, f)
+	f.close()
+
+	#load
+	f = open('tagger.pickle', 'rb')
+	tagger = pickle.load(f)
+
+
+def backoff_tagger(train_sents,tagger_classes, backoff=None):
+   for cls in tagger_classes:
+     backoff = cls(train_sents, backoff=backoff)
+   return backoff
+
+
+'''
 
 from nltk.tbl.template import Template  # <- ??
 from nltk.tag.brill import Pos, Word
-from nltk.tag import RegexpTagger, untag
+from nltk.tag import RegexpTagger, untag, UnigramTagger, BigramTagger, TrigramTagger
 from nltk.tag.brill_trainer import BrillTaggerTrainer
 from nltk.corpus import brown
 
@@ -55,7 +77,20 @@ baseline = backoff   # better baseline uses Unigram tagger (??)
 # construct template
 Template._cleartemplates()  # clear any templates created in eariler tests
 
-templates = [Template(Pos([-1])), Template(Pos([-1]), Word([0]))]
+#templates = [Template(Pos([-1])), Template(Pos([-1]), Word([0]))]
+
+templates = [
+    brill.SymmetricProximateTokensTemplate(brill.ProximateTagsRule, (1,1)),
+    brill.SymmetricProximateTokensTemplate(brill.ProximateTagsRule, (2,2)),
+    brill.SymmetricProximateTokensTemplate(brill.ProximateTagsRule, (1,2)),
+    brill.SymmetricProximateTokensTemplate(brill.ProximateTagsRule, (1,3)),
+    brill.SymmetricProximateTokensTemplate(brill.ProximateWordsRule, (1,1)),
+    brill.SymmetricProximateTokensTemplate(brill.ProximateWordsRule, (2,2)),
+    brill.SymmetricProximateTokensTemplate(brill.ProximateWordsRule, (1,2)),
+    brill.SymmetricProximateTokensTemplate(brill.ProximateWordsRule, (1,3)),
+    brill.ProximateTokensTemplate(brill.ProximateTagsRule, (-1, -1), (1,1)),
+    brill.ProximateTokensTemplate(brill.ProximateWordsRule, (-1, -1), (1,1))
+]
 
 # construct a Brill Tagger Trainer
 '''
