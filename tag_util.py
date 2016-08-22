@@ -54,6 +54,14 @@ def train_brill_tagger(initial_tagger, train_sents, **kwargs):
 		   brill.Template(brill.Word([-1]), brill.Word([1])),
 		]
 
+	'''
+		BrillTaggerTrainer(1st, 2nd, 3rd, ...)
+			1st param initial_tagger: (Tagger) the baseline tagger
+			2nd param templates : (list of templates) templates to be used in training
+			3rd param trace: (int) verbosity level == information level u want to see
+			4th param deterministic: (bool) if True, adjudicate ties deterministically
+			5th ruleformat: (str) format of reported rules
+	'''
 	trainer = brill_trainer.BrillTaggerTrainer(initial_tagger, templates, deterministic=True)
 	return trainer.train(train_sents, **kwargs)
 
