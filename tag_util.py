@@ -8,6 +8,13 @@ def word_tag_model(words, tagged_words, limit=200):
 	return dict((word, cfd[word].max()) for word in most_freq)
 
 def backoff_tagger(train_sents, tagger_classes, backoff=None):
+	'''
+		backoff tagger is needed when the program face with the 
+		oov (out of vocabulary) words. So instead of tag them as 
+		None, backoff tagger can help reduce problem.
+
+		We will use some Regexp pattern for the back off
+	'''
 	for cls in tagger_classes:
 		backoff = cls(train_sents, backoff=backoff)
 
