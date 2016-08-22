@@ -1,45 +1,47 @@
 '''
-	I want to train a Brill's Tagger on Brown Corpus
+	I want to train a Brill's Tagger on CONLL2000
 	
 	Brill's tagger is a TBL (transformation based Learning) approach
 	It is based on rules that specify what tag should be assigned
 	to what words. It is a supervised technique; it assumes there is
 	pre-tagged training corpus.
 '''
-'''
-	how to save and load trained tagger
-   
-	import pickle
 
-	# save
-	f = open('tagger.pickle', 'wb')
-	pickle.dump(tagger, f)
-	f.close()
-
-	#load
-	f = open('tagger.pickle', 'rb')
-	tagger = pickle.load(f)
-
-'''
-
-from nltk.tag import RegexpTagger, untag, UnigramTagger, BigramTagger, TrigramTagger, DefaultTagger
+from nltk.tag import RegexpTagger, untag, UnigramTagger, BigramTagger, TrigramTagger, DefaultTagger, AffixTagger, RegexpTagger
 from nltk.tag.brill_trainer import BrillTaggerTrainer
-from nltk.corpus import brown, treebank
+from nltk.corpus import brown, treebank, conll2000
 from tag_util import backoff_tagger, train_brill_tagger
 import pickle
 
-train_sents = brown.tagged_sents(categories=['news'])[:10000]
-test_sents = brown.tagged_sents(categories=['news']) [10000:20000]
+# train_sents = brown.tagged_sents(categories=['news'])[:40000]
+# test_sents = brown.tagged_sents(categories=['news']) [40000:50000]
+train_sents = conll2000.tagged_sents()
+# some regex pattern that will be used for the RegexpTagger
+regex_pattern = [
+	    (r'^-?[0-9]+(.[0-9]+)?$', 'CD'),
+	    (r'.*ould$', 'MD'),
+	    (r'.*ing$', 'VBG'),
+	    (r'.*ed$', 'VBD'),
+	    (r'.*ness$', 'NN'),
+	    (r'.*ment$', 'NN'),
+	    (r'.*ful$', 'JJ'),
+	    (r'.*ious$', 'JJ'),
+	    (r'.*ble$', 'JJ'),
+	    (r'.*ic$', 'JJ'),
+	    (r'.*ive$', 'JJ'),
+	    (r'.*ic$', 'JJ'),
+	    (r'.*est$', 'JJ'),
+	    (r'^a$', 'PREP'),
+	]
 
-# Tagging using without Brill tagger
-default_tagger = DefaultTagger('NN')
-initial_tagger = backoff_tagger(train_sents, [UnigramTagger, BigramTagger, TrigramTagger], backoff=default_tagger)
-#print initial_tagger.evaluate(test_sents)
 
-# Tagging using Brill tagger trained on Brown corpus
+initial_tagger = backoff_tagger(train_sents, 
+				[AffixTagger,UnigramTagger, BigramTagger, TrigramTagger], 
+				backoff=RegexpTagger(regex_pattern))
+
+# Training the Brill Tagger
 brill_tagger = train_brill_tagger(initial_tagger, train_sents)
 #print brill_tagger.evaluate(test_sents)
-#print brill_tagger.tag(['She', 'wants','to','race','a','room'])
 
 # Save pickle for the later use
 f = open('brill_tagger.pickle','wb')

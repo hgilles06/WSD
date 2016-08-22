@@ -110,7 +110,9 @@ class WSD:
 		 				'us', 'who', 'of', 'and', 'the', 'she', 
 		 				'this', 'that', 'these', 'those', 'is']
 		self.symbols = ['>','<','.',',','!','?','-','\'']
-		self.brill_tagger = load('brill_tagger.pickle')
+		f = open('brill_tagger.pickle', 'rb')
+		self.brill_tagger = pickle.load(f)
+		f.close()
 
 	def get_document(self, docs):
 		self.document = docs
@@ -140,14 +142,15 @@ class WSD:
 
 	def word_tagger(self, word_list):
 		'''
-			1) get a sentence
-			2) tag each word in the sentence.
-			3) return a dictionary {word: it's POS}
+			word_list: list of tokenized words
+				ex: ['My','name','is','blah']
+			return: list of tokenized words with its POS
+				ex :[('she', 'PPS'),('wants','VBZ')...]
 		'''
 
-		self.brill_tagger.tag(word_list)
+		brill_tagger = self.brill_tagger
 		
-		return self.brill_tagger
+		return brill_tagger.tag(word_list)
 
 	def context_window(self, window_size=3):
 		'''
@@ -185,9 +188,14 @@ if __name__ == "__main__":
 	user_input = raw_input()
 	sen_list = wsd.tokenize_sen(user_input)
 	print sen_list
+	print '\n'
 
 	word_list = wsd.tokenize_word(sen_list)
 	print word_list
-
-	tagged_list = wsd.word_tagger(['she','wants','to','read','a','book'])
-	print tagged_list
+	print '\n'
+	
+	for sent in word_list:
+		tagged_list = wsd.word_tagger(sent)
+		print tagged_list
+	# tagged_list = wsd.word_tagger(word_list)
+	# print tagged_list
