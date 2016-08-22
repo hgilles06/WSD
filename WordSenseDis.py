@@ -2,7 +2,9 @@
 from nltk.corpus import wordnet as wn
 from nltk.tokenize import sent_tokenize, word_tokenize
 from PorterStem import StemWord as sw
+from nltk.data import load
 import re
+import pickle
 
 class WSD:
 	'''
@@ -108,6 +110,7 @@ class WSD:
 		 				'us', 'who', 'of', 'and', 'the', 'she', 
 		 				'this', 'that', 'these', 'those', 'is']
 		self.symbols = ['>','<','.',',','!','?','-','\'']
+		self.brill_tagger = load('brill_tagger.pickle')
 
 	def get_document(self, docs):
 		self.document = docs
@@ -135,13 +138,17 @@ class WSD:
 
 		return stem_dict
 
-	def word_tagger(self, sentence):
+	def word_tagger(self, word_list):
 		'''
 			1) get a sentence
 			2) tag each word in the sentence.
 			3) return a dictionary {word: it's POS}
 		'''
-		return None
+
+		self.brill_tagger.tag(word_list)
+		
+		return self.brill_tagger
+
 	def context_window(self, window_size=3):
 		'''
 			1) fixed window size of 3
@@ -177,5 +184,10 @@ if __name__ == "__main__":
 	wsd = WSD()
 	user_input = raw_input()
 	sen_list = wsd.tokenize_sen(user_input)
+	print sen_list
+
 	word_list = wsd.tokenize_word(sen_list)
-	print wsd.porter_stem(word_list)
+	print word_list
+
+	tagged_list = wsd.word_tagger(['she','wants','to','read','a','book'])
+	print tagged_list
