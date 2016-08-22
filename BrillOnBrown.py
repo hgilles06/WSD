@@ -20,35 +20,16 @@
 	f = open('tagger.pickle', 'rb')
 	tagger = pickle.load(f)
 
-
-def backoff_tagger(train_sents,tagger_classes, backoff=None):
-   for cls in tagger_classes:
-     backoff = cls(train_sents, backoff=backoff)
-   return backoff
-
-
 '''
-from nltk.tbl.template import Template  # <- ??
-from nltk.tag.brill import Pos, Word
+
 from nltk.tag import RegexpTagger, untag, UnigramTagger, BigramTagger, TrigramTagger, DefaultTagger
 from nltk.tag.brill_trainer import BrillTaggerTrainer
 from nltk.corpus import brown, treebank
 from tag_util import backoff_tagger, train_brill_tagger
+import pickle
 
-train_sents = brown.tagged_sents(categories=['news'])[:3000]
-test_sents = brown.tagged_sents(categories=['news']) [3000:]
-
-# backoff = RegexpTagger([
-# 		(r'^-?[0-9]+(.[0-9]+)?$', 'CD'),  # cardinal numbers
-# 		(r'(The|the|A|a|An|an)$','AT'),  # articles
-# 		(r'.*ables$', 'JJ'),  # adjectives
-# 		(r'.*ness$', 'NN'),  # nounds formed from adjectives
-# 		(r'.*ly$', 'RB'),  # adverbs
-# 		(r'.*s$','NNS'),  # plural nouns
-# 		(r'.*ing$','VBG'),  # gerunds
-# 		(r'.*ed$', 'VBD'),  # past tense verbs
-# 		(r'.*', 'NN')	# nouns (default)
-# 		])
+train_sents = brown.tagged_sents(categories=['news'])[:10000]
+test_sents = brown.tagged_sents(categories=['news']) [10000:20000]
 
 # Tagging using without Brill tagger
 default_tagger = DefaultTagger('NN')
@@ -58,4 +39,9 @@ initial_tagger = backoff_tagger(train_sents, [UnigramTagger, BigramTagger, Trigr
 # Tagging using Brill tagger trained on Brown corpus
 brill_tagger = train_brill_tagger(initial_tagger, train_sents)
 #print brill_tagger.evaluate(test_sents)
-print brill_tagger.tag(['She', 'wants','to','book','a','room'])
+#print brill_tagger.tag(['She', 'wants','to','race','a','room'])
+
+# Save pickle for the later use
+f = open('brill_tagger.pickle','wb')
+pickle.dump(brill_tagger, f)
+f.close()
