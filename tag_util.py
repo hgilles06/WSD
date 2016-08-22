@@ -1,10 +1,13 @@
 from nltk.tag import brill, brill_trainer
 from nltk.probability import FreqDist, ConditionalFreqDist
+from nltk.tbl.template import Template  # <- ??
+from nltk.tag.brill import Pos, Word
 
 def word_tag_model(words, tagged_words, limit=200):
 	fd = FreqDist(words)
 	cdf = ConditionalFreqDist(tagged_words)
 	most_freq = (word for word, count in fd.most_common(limit))
+
 	return dict((word, cfd[word].max()) for word in most_freq)
 
 def backoff_tagger(train_sents, tagger_classes, backoff=None):
@@ -33,6 +36,8 @@ def train_brill_tagger(initial_tagger, train_sents, **kwargs):
 			change the POS of a word, depending on the previous word and the next word
 	'''
 
+	# Template generates rule for the Brill Rules that Brill tagger gonna use it
+	 
 	templates = [
 	       brill.Template(brill.Pos([-1])),  # rule can be generated using the previous POS tag
 	       brill.Template(brill.Pos([1])),  # look at the next POS tag to generate a rule
@@ -62,6 +67,7 @@ def train_brill_tagger(initial_tagger, train_sents, **kwargs):
 			4th param deterministic: (bool) if True, adjudicate ties deterministically
 			5th ruleformat: (str) format of reported rules
 	'''
-	trainer = brill_trainer.BrillTaggerTrainer(initial_tagger, templates, deterministic=True)
+	
+	trainer = brill_trainer.BrillTaggerTrainer(initial_tagger, templates, deterministic=True, trace=False)
 	return trainer.train(train_sents, **kwargs)
 
