@@ -40,6 +40,8 @@ class StemWord:
         elif ( suffix == 'SS'):
             stem = stem + 'SS'
         elif ( suffix == 'S'):
+            if (stem == 'GOE' or stem =='DOE'):
+                stem = stem[:2]
             stem = stem
         else:
             #print >> sys.stderr, 'No mapping found in step 1a'
