@@ -69,5 +69,5 @@ def train_brill_tagger(initial_tagger, train_sents, **kwargs):
 	'''
 	
 	trainer = brill_trainer.BrillTaggerTrainer(initial_tagger, templates, deterministic=True, trace=False)
-	return trainer.train(train_sents, max_rules=100, min_score=3)
+	return trainer.train(train_sents, max_rules=100, min_score=2)
 
