@@ -186,16 +186,27 @@ class WSD:
 if __name__ == "__main__":
 	wsd = WSD()
 	user_input = raw_input()
+
+	# setence tokenize
 	sen_list = wsd.tokenize_sen(user_input)
 	print sen_list
 	print '\n'
 
+	# word tokenize
 	word_list = wsd.tokenize_word(sen_list)
 	print word_list
 	print '\n'
 	
+	# tag each word in the sentence
+	tagged_list = []
 	for sent in word_list:
-		tagged_list = wsd.word_tagger(sent)
-		print tagged_list
+		tagged_list.append(wsd.word_tagger(sent))
+	#print tagged_list
+
+	# stem each word in the sentence
+	for sent in tagged_list:
+		print sent
+
+
 	# tagged_list = wsd.word_tagger(word_list)
 	# print tagged_list
