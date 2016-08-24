@@ -5,6 +5,21 @@
 	It is based on rules that specify what tag should be assigned
 	to what words. It is a supervised technique; it assumes there is
 	pre-tagged training corpus.
+
+	Problem:
+		It's not 100% accurate.
+		It shows wrong result when input 
+		ex: "I want to book a flight."
+
+		The correct output for the word 'book' should be 'VB', but the program
+		tags it as 'NN'.  
+
+		Fortunately, it doesn't tag every word as NN when it's preceeded by 'To'. 
+		ex: 'To read'
+		output: (read: VB)
+		which is correct output.
+
+		So I need to research bit more for this.
 '''
 
 from nltk.tag import RegexpTagger, untag, UnigramTagger, BigramTagger, TrigramTagger, DefaultTagger, AffixTagger, RegexpTagger
@@ -31,7 +46,7 @@ regex_pattern = [
 	    (r'.*ive$', 'JJ'),
 	    (r'.*ic$', 'JJ'),
 	    (r'.*est$', 'JJ'),
-	    (r'^a$', 'PREP'),
+	    (r'^a$', 'PREP')
 	]
 
 
