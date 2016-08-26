@@ -132,19 +132,54 @@ class WSD:
 		return word_token_list
 
 	def porter_stem(self, sen_list):
-		stem_dict = {}
-		for sen in sen_list:
-			for word in sen:
-				if (word not in self.stop_word) and (word not in self.symbols): 
-					stem_dict[word] = sw().do_stem(word.upper())
+		'''
+			Param:
+				[ [("hello")], [('Hello2')] ]
+			Return : 
+				[ [('She','PRP'), ('to','To')], [('He', 'PRP')] ]
+		'''
+		ret_list = []
+		word_pos = []
 
-		return stem_dict
+		# because stem() returns every words in capital, so we want to store
+		# a word in its original form
+		upper_case_check = False
+
+		for sent in sen_list:
+			for word in sent:
+				if (word[0] not in self.stop_word) and (word[0] not in self.symbols):
+
+					if (word[0][0].isupper()):
+						upper_case_check = True
+					else:
+						upper_case_check = False
+
+
+					upper_case = sw().do_stem(word[0].upper())
+
+					if (upper_case_check == True):
+						lower_case = upper_case[0] + upper_case[1:].lower()
+					else:
+						lower_case = upper_case.lower()
+							
+					param = ( lower_case, word[1])
+					word_pos.append(param)
+				else:
+					word_pos.append(word)
+			
+			ret_list.append(word_pos)
+			
+			word_pos = []  # reset the list, so we can avoid duplicate list
+
+		return ret_list
 
 	def word_tagger(self, word_list):
 		'''
-			word_list: list of tokenized words
-				ex: ['My','name','is','blah']
-			return: list of tokenized words with its POS
+			Param:
+				word_list: list of tokenized words
+					ex: ['My','name','is','blah']
+			Return:
+				list of tokenized words with its POS
 				ex :[('she', 'PPS'),('wants','VBZ')...]
 		'''
 
@@ -152,30 +187,40 @@ class WSD:
 		
 		return brill_tagger.tag(word_list)
 
-	def context_window(self, window_size=3):
+	#TODO
+	def get_context_window(self, sent_list, window_size=3):
 		'''
 			1) fixed window size of 3
 			2) return a list [Non-target-word, Target-word, Non-target-word]
-
 		'''
+
+
 		return None
+
+	#TODO
 	def score_sense(self, sense):
 		'''
 			1) use square score method
 		'''
 		return None
+
+	#TODO
 	def hypo_concat(self, word):
 		'''
 			return a string that is concatenation of
 			gloss of hyponyms
 		'''
 		return None
+
+	#TODO
 	def hype_concat(self, word):
 		'''
 			returna string that is concatenation of
 			gloss of hypernym
 		'''
 		return None
+
+	#TODO
 	def sense_combination(self, senses):
 		'''
 			return a list of possible sense combination
@@ -189,11 +234,13 @@ if __name__ == "__main__":
 
 	# setence tokenize
 	sen_list = wsd.tokenize_sen(user_input)
+	print 'Sentence token: '
 	print sen_list
 	print '\n'
 
 	# word tokenize
 	word_list = wsd.tokenize_word(sen_list)
+	print 'Word token: '
 	print word_list
 	print '\n'
 	
@@ -201,12 +248,13 @@ if __name__ == "__main__":
 	tagged_list = []
 	for sent in word_list:
 		tagged_list.append(wsd.word_tagger(sent))
-	#print tagged_list
 
-	# stem each word in the sentence
-	for sent in tagged_list:
-		print sent
+	# stem each word
+	stemmed_list = wsd.porter_stem(tagged_list)
+	print stemmed_list
 
+	# get a Target word and non-target word in the context window size of 3
+	for sent in stemmed_list:
+		context_window = wsd.get_context_window(sent)
+		print context_window
 
-	# tagged_list = wsd.word_tagger(word_list)
-	# print tagged_list
