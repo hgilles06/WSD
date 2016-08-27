@@ -251,6 +251,7 @@ class StemWord:
                 (m>0) FUL   ->
                 (m>0) NESS  ->
         '''
+
         parse_stem = re.findall(r'^(.*?)(ICATE|ATIVE|ALIZE|ICITI|ICAL|FUL|NESS)$', word)
 
         if len(parse_stem) == 0:
@@ -273,6 +274,7 @@ class StemWord:
             return parse_stem[0][0] + 'AL'
         else:
             return word
+
     def step_4(self, word):
         '''
             Rules:
@@ -303,16 +305,18 @@ class StemWord:
             return word
 
         if parse_stem[0][1] != 'ION':
+
             consonant = self.to_consonant_vowel(parse_stem[0][0])
+            
             m = (consonant.values()[0]).count('VC')
-            if m > 0:
+            if m > 1:
                 return consonant.keys()[0]
             else:
                 return word
         else:
             consonant = self.to_consonant_vowel(parse_stem[0][0])
             m = (consonant.values()[0]).count('VC')
-            if m > 0:
+            if m > 1:
                 end_letter = re.findall(r'^(.*?)(S|T)$', consonant.keys()[0])
                 if len(end_letter) != 0:
                     return consonant.keys()[0]
@@ -320,6 +324,7 @@ class StemWord:
                     return word
             else:
                 return word
+
     def step_5a(self, word):
         '''
             rules:
