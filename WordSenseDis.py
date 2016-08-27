@@ -128,7 +128,18 @@ class WSD:
 		return sentence_list
 
 	def tokenize_word(self, sen_list):
+
 		word_token_list = [word_tokenize(sen) for sen in sen_list]
+
+		for sent in word_token_list:
+			for word in sent:
+
+				if (word in self.stop_word):
+					sent.remove(word)
+
+				if (word in self.symbols):
+					sent.remove(word)
+
 		return word_token_list
 
 	def porter_stem(self, sen_list):
@@ -202,7 +213,9 @@ class WSD:
 		for sent_list in sent_list:
 
 			for word in sent_list:
+
 				context.append(word)
+				
 				if (len(context) is window_size):
 					ret_context.append(context)
 					context = []
@@ -221,6 +234,14 @@ class WSD:
 					ret_context.append(context)
 
 		return ret_context
+
+	#TODO
+	def get_sense(self, context_window):
+		'''
+			Param:
+
+		'''
+		return None
 
 	#TODO
 	def score_sense(self, sense):
@@ -251,6 +272,8 @@ class WSD:
 			return a list of possible sense combination
 		'''
 		return None
+
+
 
 
 if __name__ == "__main__":
