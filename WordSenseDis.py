@@ -187,15 +187,40 @@ class WSD:
 		
 		return brill_tagger.tag(word_list)
 
-	#TODO
 	def get_context_window(self, sent_list, window_size=3):
 		'''
-			1) fixed window size of 3
-			2) return a list [Non-target-word, Target-word, Non-target-word]
+			Param:
+				sent_list = [[('She','PRP'), ('is','DT'), ('the','DT') ], 
+								[('He','PRP'),('is','DT'), ('the','DT')] ]
+				window_size = pick a number of context window size
+			Ret:	
+				if window_size = 3
+				[Non-target-word, Target-word, Non-target-word]
 		'''
+		context = []
+		ret_context = []
+		for sent_list in sent_list:
 
+			for word in sent_list:
+				context.append(word)
+				if (len(context) is window_size):
+					ret_context.append(context)
+					context = []
 
-		return None
+			if (len(context) is not 0):
+				if (len(sent_list) >= 3):
+					short_amount = window_size - len(context)
+					short_amount = short_amount * (-1)
+					previous_context = ret_context[-1]
+					context_to_add = previous_context[short_amount:]
+
+					context = context_to_add + context
+					ret_context.append(context)
+					context = []
+				else:
+					ret_context.append(context)
+
+		return ret_context
 
 	#TODO
 	def score_sense(self, sense):
@@ -231,6 +256,7 @@ class WSD:
 if __name__ == "__main__":
 	wsd = WSD()
 	user_input = raw_input()
+	print '\n'
 
 	# setence tokenize
 	sen_list = wsd.tokenize_sen(user_input)
@@ -248,13 +274,18 @@ if __name__ == "__main__":
 	tagged_list = []
 	for sent in word_list:
 		tagged_list.append(wsd.word_tagger(sent))
+	print 'Tagged word list'
+	print tagged_list
+	print '\n'
 
 	# stem each word
 	stemmed_list = wsd.porter_stem(tagged_list)
+	print 'After porter stemmed'
 	print stemmed_list
+	print '\n'
 
 	# get a Target word and non-target word in the context window size of 3
-	for sent in stemmed_list:
-		context_window = wsd.get_context_window(sent)
-		print context_window
+	context_window = wsd.get_context_window(stemmed_list)
+	print 'Context window'
+	print context_window
 
