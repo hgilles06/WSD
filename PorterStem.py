@@ -5,6 +5,8 @@
 '''
 
 #import nltk
+from nltk.corpus import wordnet as wn
+from nltk.stem import WordNetLemmatizer
 import re
 import sys
 
@@ -12,6 +14,8 @@ class StemWord:
 
     def __init__(self):
         self.stem = []
+        self.lemmatizer = WordNetLemmatizer()
+
 
     def step_1a(self, word):
         '''
@@ -431,6 +435,24 @@ class StemWord:
         return ret_list
 
     def do_stem(self, word):
+        '''
+            A problem with porter stemer is that
+            when the word is ending with -ies,
+            it replaces 'ies' with 'i'
+
+            ex: multiplies -> multipli
+
+            we want to get the root form.
+            I found that lemmatizer could give us the
+            correct root form when the word is ending with -ies.
+
+        '''
+        result = re.findall(r'^(.*?)(IES)$', word)
+        
+        if (len(result) != 0):
+            word = word.lower()
+            return str(self.lemmatizer.lemmatize(word))
+
         step_1a = self.step_1a(word)
         step_1b = self.step_1b(step_1a)
         step_1c = self.step_1c(step_1b)
@@ -439,7 +461,15 @@ class StemWord:
         step_4 = self.step_4(step_3)
         step_5a = self.step_5a(step_4)
         stem = self.step_5b(step_5a)
-        return stem
+
+        # we want to search the final stem in the corpus
+        # if we cannot find it in there, then
+        # we just want to use the original word.
+        # but gotta figure out how to reduce the import time.
+        if (len(wn.synsets(stem)) != 0):
+            return stem
+        else:
+            return word
 
 if __name__ == "__main__":
     user_input = raw_input()
@@ -467,4 +497,8 @@ if __name__ == "__main__":
     # print step_5a
 
     stem = sw.step_5b(step_5a)
-    print stem
+
+    if (len(wn.synsets(stem)) != 0):
+        print stem
+    else:
+        print user_input
