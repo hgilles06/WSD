@@ -2,6 +2,7 @@
 from nltk.tokenize import sent_tokenize, word_tokenize
 from PorterStem import StemWord as sw
 from nltk.data import load
+from nltk.corpus import wordnet as wn
 import re
 import pickle
 
@@ -104,14 +105,27 @@ class WSD:
 		self.document = []
 		self.sentence = []
 		self.query = []
+		
 		self.stop_word = ['I', 'a', 'an', 'as', 'at', 'by',
 		 				'he', 'his', 'me', 'or', 'thou',
 		 				'us', 'who', 'of', 'and', 'the', 'she', 
 		 				'this', 'that', 'these', 'those', 'is']
+		
 		self.symbols = ['>','<','.',',','!','?','-','\'']
+		
+		# load up the brill tagger 
 		f = open('brill_tagger.pickle', 'rb')
 		self.brill_tagger = pickle.load(f)
 		f.close()
+
+		self.synsets_pos_list = [ 'ADJ', 'ADJ_SAT', 'ADV', 'NOUN', 'VERB']
+
+		self.vb_tag_list = ['VBZ','VB','VBD','VBG','VBN']
+		self.noun_tag_list = ['NN','NNS']
+		self.adj_tag_list = ['JJ', 'JJR']
+		self.adv_tag_list = ['RB']
+
+
 
 	def get_document(self, docs):
 		self.document = docs
@@ -131,19 +145,10 @@ class WSD:
 			param:
 				sen_list = [[sentence 1], [sentence 2]]
 			return:
-				[[words in sentence 1], [words in sentence 2]]
+				[[words in sentence 1], [words in sentence 2]] 
 		'''
 
 		word_token_list = [word_tokenize(sen) for sen in sen_list]
-
-		for sent in word_token_list:
-			for word in sent:
-
-				if (word in self.stop_word):
-					sent.remove(word)
-
-				if (word in self.symbols):
-					sent.remove(word)
 
 		return word_token_list
 
@@ -203,6 +208,26 @@ class WSD:
 		
 		return brill_tagger.tag(word_list)
 
+	def remove_stop_word(self, tagged_list):
+		'''
+			param:
+				tagged_list : [ [('she', tag), ('is', tag), ('angry', tag)] ....]
+			return:
+				tagged_list : [[('angry', tag)]...]
+		'''
+		word_list = []
+		sent_list = []
+
+		for sent in tagged_list:
+			for word in sent:
+				if ( (word[0] not in self.stop_word) and (word[0] not in self.symbols)):
+					word_list.append(word)
+			sent_list.append(word_list)
+			word_list = []
+
+		return sent_list
+
+
 	def get_context_window(self, sent_list, window_size=3):
 		'''
 			Param:
@@ -241,15 +266,46 @@ class WSD:
 		return ret_context
 
 	#TODO
-	def get_sense(self, context_window):
+	def get_senses(self, context_window):
 		'''
 			Param:
-				context_window = [[(non-target),(target),(non-target)], [(non-tareget),(target),(non-target)] ]
+				context_window = [ [(non-target, its tag),(target, its tag),(non-target, its tag)] ... ]
 			ret:
 				
-		
 		'''
-		return None
+		sense_dict = {}
+		tag = ''
+
+		for context in context_window:
+			for word in context:
+
+				if ( str(word[1]) in self.vb_tag_list):
+					senses = wn.synsets(word[0], pos=wn.VERB)
+					tag = 'v'
+				elif( str(word[1]) in self.noun_tag_list ):
+					senses = wn.synsets(word[0], pos=wn.NOUN)
+					tag = 'n'
+				elif (str(word[1]) in self.adj_tag_list):
+					senses = wn.synsets(word[0], pos=wn.ADJ)
+					tag = 'adj'
+				elif (str(word[1]) in self.adv_tag_list):
+					senses = wn.synsets(word[0], pos=wn.ADV)
+					tag = 'adv'
+				else:
+					senses = ''
+					tag = ''
+
+				if ( len(senses) > 0):
+					if (tag is 'v'):
+						sense_dict[(word[0],'v')] = senses
+					elif (tag is 'n'):
+						sense_dict[(word[0],'n')] = senses
+					elif (tag is 'adj'):
+						sense_dict[(word[0],'adj')] = senses
+					else:
+						sense_dict[(word[0], 'adv')] = senses
+		
+		return sense_dict
 
 	#TODO
 	def score_sense(self, sense):
@@ -309,8 +365,14 @@ if __name__ == "__main__":
 	print tagged_list
 	print '\n'
 
+	# remove the stopword and symbols from the list
+	print 'Removed stop word from the list'
+	removed_stop_list = wsd.remove_stop_word(tagged_list)
+	print removed_stop_list
+	print '\n'
+
 	# stem each word
-	stemmed_list = wsd.porter_stem(tagged_list)
+	stemmed_list = wsd.porter_stem(removed_stop_list)
 	print 'After porter stemmed'
 	print stemmed_list
 	print '\n'
@@ -319,4 +381,10 @@ if __name__ == "__main__":
 	context_window = wsd.get_context_window(stemmed_list)
 	print 'Context window'
 	print context_window
+	print '\n'
+
+	#get the sense of each word in the context.
+	senses = wsd.get_senses(context_window)
+	print 'Senses of each word'
+	print senses
 
