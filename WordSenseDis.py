@@ -111,7 +111,7 @@ class WSD:
 		 				'us', 'who', 'of', 'and', 'the', 'she', 'She', 'He', 
 		 				'this', 'that', 'these', 'those', 'is', 'They', 'Their']
 		
-		self.symbols = ['>','<','.',',','!','?','-','\'']
+		self.symbols = ['>','<','.',',','!','?','-','\'','--']
 		
 		# load up the brill tagger 
 		f = open('brill_tagger.pickle', 'rb')
@@ -120,7 +120,7 @@ class WSD:
 
 		self.synsets_pos_list = [ 'ADJ', 'ADJ_SAT', 'ADV', 'NOUN', 'VERB']
 
-		self.vb_tag_list = ['VBZ','VB','VBD','VBG','VBN']
+		self.vb_tag_list = ['VBZ','VB','VBD','VBG','VBN','VBP']
 		self.noun_tag_list = ['NN','NNS','NNPS']
 		self.adj_tag_list = ['JJ', 'JJR']
 		self.adv_tag_list = ['RB']
@@ -236,7 +236,7 @@ class WSD:
 				window_size = pick a number of context window size
 			Ret:	
 				if window_size = 3
-				[Non-target-word, Target-word, Non-target-word]
+					[Non-target-word, Target-word, Non-target-word]
 		'''
 		context = []
 		ret_context = []
@@ -250,14 +250,15 @@ class WSD:
 					ret_context.append(context)
 					context = []
 
-			# case when there is less than 3 words in a sentence.
+			# case when there is less than window size words in a sentence.
 			if (len(ret_context) is 0):
 				if(len(context) is not 0):
 					ret_context.append(context)
 					context = []
 
+			# case when there isn't enough words for the next context window
 			if (len(context) is not 0):
-				if (len(sent_list) >= 3):
+				if (len(sent_list) >= window_size):
 					short_amount = window_size - len(context)
 					short_amount = short_amount * (-1)
 					previous_context = ret_context[-1]
@@ -271,7 +272,6 @@ class WSD:
 
 		return ret_context
 
-	#TODO
 	def get_senses(self, context_window):
 		'''
 			Param:
@@ -314,6 +314,13 @@ class WSD:
 		return sense_dict
 
 	#TODO
+	def sense_combination(self, senses):
+		'''
+			return a list of possible sense combination
+		'''
+		return None
+
+	#TODO
 	def score_sense(self, sense):
 		'''
 			1) use square score method
@@ -336,12 +343,6 @@ class WSD:
 		'''
 		return None
 
-	#TODO
-	def sense_combination(self, senses):
-		'''
-			return a list of possible sense combination
-		'''
-		return None
 
 
 
@@ -392,5 +393,12 @@ if __name__ == "__main__":
 	#get the sense of each word in the context.
 	senses = wsd.get_senses(context_window)
 	print 'Senses of each word'
-	print senses
+	for key, value in senses.iteritems():
+		print key 
+		print value
+		print ''
 
+	sense_combo = wsd.sense_combination(senses)
+	print 'Sense combination'
+	print sense_combo
+	print ''
