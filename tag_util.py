@@ -19,6 +19,10 @@ def backoff_tagger(train_sents, tagger_classes, backoff=None):
 		We will use some Regexp pattern for the back off
 	'''
 	for cls in tagger_classes:
+		print 'Training ',
+		print cls,
+		print ' on conll2000'
+
 		backoff = cls(train_sents, backoff=backoff)
 
 	return backoff
@@ -68,6 +72,6 @@ def train_brill_tagger(initial_tagger, train_sents, **kwargs):
 			5th ruleformat: (str) format of reported rules
 	'''
 	
-	trainer = brill_trainer.BrillTaggerTrainer(initial_tagger, templates, deterministic=True, trace=False)
+	trainer = brill_trainer.BrillTaggerTrainer(initial_tagger, templates, deterministic=True, trace=True)
 	return trainer.train(train_sents, max_rules=100, min_score=2)
 
