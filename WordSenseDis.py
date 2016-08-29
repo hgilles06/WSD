@@ -108,8 +108,8 @@ class WSD:
 		
 		self.stop_word = ['I', 'a', 'an', 'as', 'at', 'by',
 		 				'he', 'his', 'me', 'or', 'thou',
-		 				'us', 'who', 'of', 'and', 'the', 'she', 
-		 				'this', 'that', 'these', 'those', 'is']
+		 				'us', 'who', 'of', 'and', 'the', 'she', 'She', 'He', 
+		 				'this', 'that', 'these', 'those', 'is', 'They', 'Their']
 		
 		self.symbols = ['>','<','.',',','!','?','-','\'']
 		
@@ -121,7 +121,7 @@ class WSD:
 		self.synsets_pos_list = [ 'ADJ', 'ADJ_SAT', 'ADV', 'NOUN', 'VERB']
 
 		self.vb_tag_list = ['VBZ','VB','VBD','VBG','VBN']
-		self.noun_tag_list = ['NN','NNS']
+		self.noun_tag_list = ['NN','NNS','NNPS']
 		self.adj_tag_list = ['JJ', 'JJR']
 		self.adv_tag_list = ['RB']
 
@@ -228,7 +228,7 @@ class WSD:
 		return sent_list
 
 
-	def get_context_window(self, sent_list, window_size=3):
+	def get_context_window(self, sent_lists, window_size=3):
 		'''
 			Param:
 				sent_list = [[('She','PRP'), ('is','DT'), ('the','DT') ], 
@@ -240,13 +240,19 @@ class WSD:
 		'''
 		context = []
 		ret_context = []
-		for sent_list in sent_list:
+		for sent_list in sent_lists:
 
 			for word in sent_list:
 
 				context.append(word)
 				
 				if (len(context) is window_size):
+					ret_context.append(context)
+					context = []
+
+			# case when there is less than 3 words in a sentence.
+			if (len(ret_context) is 0):
+				if(len(context) is not 0):
 					ret_context.append(context)
 					context = []
 
@@ -365,20 +371,20 @@ if __name__ == "__main__":
 	print tagged_list
 	print '\n'
 
-	# remove the stopword and symbols from the list
-	print 'Removed stop word from the list'
-	removed_stop_list = wsd.remove_stop_word(tagged_list)
-	print removed_stop_list
-	print '\n'
-
 	# stem each word
-	stemmed_list = wsd.porter_stem(removed_stop_list)
+	stemmed_list = wsd.porter_stem(tagged_list)
 	print 'After porter stemmed'
 	print stemmed_list
 	print '\n'
 
+	# remove the stopword and symbols from the list
+	print 'Removed stop word from the list'
+	removed_stop_list = wsd.remove_stop_word(stemmed_list)
+	print removed_stop_list
+	print '\n'
+
 	# get a Target word and non-target word in the context window size of 3
-	context_window = wsd.get_context_window(stemmed_list)
+	context_window = wsd.get_context_window(removed_stop_list)
 	print 'Context window'
 	print context_window
 	print '\n'
