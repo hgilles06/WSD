@@ -1,5 +1,4 @@
 
-from nltk.corpus import wordnet as wn
 from nltk.tokenize import sent_tokenize, word_tokenize
 from PorterStem import StemWord as sw
 from nltk.data import load
