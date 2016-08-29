@@ -46,6 +46,7 @@ regex_pattern = [
 	    (r'.*ive$', 'JJ'),
 	    (r'.*ic$', 'JJ'),
 	    (r'.*est$', 'JJ'),
+	    (r'mad','JJ'),
 	    (r'^a$', 'PREP')
 	]
 
