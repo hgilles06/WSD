@@ -378,20 +378,28 @@ class StemWord:
             returns the dictionary { word: consonant_vowel}
 
             consonant:
-                1) other than A,E,I,O,U
-                2) other than y preceded by consonant
+                1) a letter other than A,E,I,O,U
+                2) a letter other than y preceded by consonant: 
+                    if Y is preceded by C, then it's vowel
+                    if Y is preceded not by C, then it's consonant
+            
             Not consonant means = vowel
 
         '''
         letter_list = list(word)
         ret_list = []
-
-        for letter in letter_list:
+        #print letter_list
+        
+        for i,letter in enumerate (letter_list):
             if (letter == 'A' or letter == 'E' or letter == 'I' or letter == 'O' or letter == 'U'):
                 ret_list.append('V')
             elif (letter == 'Y'):
-                if (ret_list[len(ret_list)-1] == 'C'):
-                    ret_list.append('V')
+                #print ret_list
+                if( len(ret_list) > 0):
+                    if (ret_list[i-1] == 'C'):
+                        ret_list.append('V')
+                    else:
+                        ret_list.append('C')
                 else:
                     ret_list.append('C')
             else:
@@ -473,31 +481,46 @@ class StemWord:
 
 if __name__ == "__main__":
     user_input = raw_input()
+    print ''
     sw = StemWord()
 
     step_1a = sw.step_1a(str(user_input))
-    #print stem_1a
+    print 'step_1a: ',
+    print step_1a
+    print ''
 
     step_1b = sw.step_1b(step_1a)
-    #print stem_1b
+    print 'step_1b: ',
+    print step_1b
+    print ''
 
     step_1c = sw.step_1c(step_1b)
-    #print stem_1c
+    print 'step_1c: ',
+    print step_1c
+    print ''
 
     step_2 = sw.step_2(step_1c)
-    # print step_2
+    print 'step_2: ',
+    print step_2
+    print ''
 
     step_3 = sw.step_3(step_2)
-    # print step_3
+    print 'step_3: ',
+    print step_3
+    print ''
 
     step_4 = sw.step_4(step_3)
-    # print step_4
+    print 'step_4: ',
+    print step_4
+    print ''
 
     step_5a = sw.step_5a(step_4)
-    # print step_5a
+    print 'step_5a: ',
+    print step_5a
+    print ''
 
     stem = sw.step_5b(step_5a)
-
+    print 'Final: ',
     if (len(wn.synsets(stem)) != 0):
         print stem
     else:
