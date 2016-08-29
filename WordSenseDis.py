@@ -128,6 +128,12 @@ class WSD:
 		return sentence_list
 
 	def tokenize_word(self, sen_list):
+		'''
+			param:
+				sen_list = [[sentence 1], [sentence 2]]
+			return:
+				[[words in sentence 1], [words in sentence 2]]
+		'''
 
 		word_token_list = [word_tokenize(sen) for sen in sen_list]
 
@@ -239,7 +245,10 @@ class WSD:
 	def get_sense(self, context_window):
 		'''
 			Param:
-
+				context_window = [[(non-target),(target),(non-target)], [(non-tareget),(target),(non-target)] ]
+			ret:
+				
+		
 		'''
 		return None
 
