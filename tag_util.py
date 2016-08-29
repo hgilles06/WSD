@@ -21,7 +21,8 @@ def backoff_tagger(train_sents, tagger_classes, backoff=None):
 	for cls in tagger_classes:
 		print 'Training ',
 		print cls,
-		print ' on conll2000'
+		print ' tagger on conll2000 corpus with',
+		print backoff
 
 		backoff = cls(train_sents, backoff=backoff)
 
