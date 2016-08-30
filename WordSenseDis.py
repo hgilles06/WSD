@@ -3,8 +3,10 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from PorterStem import StemWord as sw
 from nltk.data import load
 from nltk.corpus import wordnet as wn
+from collections import OrderedDict
 import re
 import pickle
+import itertools
 
 class WSD:
 	'''
@@ -272,52 +274,75 @@ class WSD:
 
 		return ret_context
 
-	def get_senses(self, context_window):
+	def get_senses(self, context):
 		'''
 			Param:
 				context_window = [ [(non-target, its tag),(target, its tag),(non-target, its tag)] ... ]
 			ret:
-				
+				OrderedDictionary = { ( (non-target) : [synsets1, synsets2, ...] ),
+									  ( (target) : [synset1, synset2, ...] ),
+									  ( (non-target): [synset1, synset2, ...] ),
+									  ... 
+				 } 
 		'''
-		sense_dict = {}
+		sense_dict = OrderedDict()
 		tag = ''
 
-		for context in context_window:
-			for word in context:
+		for word in context:
 
-				if ( str(word[1]) in self.vb_tag_list):
-					senses = wn.synsets(word[0], pos=wn.VERB)
-					tag = 'v'
-				elif( str(word[1]) in self.noun_tag_list ):
-					senses = wn.synsets(word[0], pos=wn.NOUN)
-					tag = 'n'
-				elif (str(word[1]) in self.adj_tag_list):
-					senses = wn.synsets(word[0], pos=wn.ADJ)
-					tag = 'adj'
-				elif (str(word[1]) in self.adv_tag_list):
-					senses = wn.synsets(word[0], pos=wn.ADV)
-					tag = 'adv'
+			if ( str(word[1]) in self.vb_tag_list):
+				senses = wn.synsets(word[0], pos=wn.VERB)
+				tag = 'v'
+			elif( str(word[1]) in self.noun_tag_list ):
+				senses = wn.synsets(word[0], pos=wn.NOUN)
+				tag = 'n'
+			elif (str(word[1]) in self.adj_tag_list):
+				senses = wn.synsets(word[0], pos=wn.ADJ)
+				tag = 'adj'
+			elif (str(word[1]) in self.adv_tag_list):
+				senses = wn.synsets(word[0], pos=wn.ADV)
+				tag = 'adv'
+			else:
+				senses = ''
+				tag = ''
+
+			if ( len(senses) > 0):
+				if (tag is 'v'):
+					sense_dict[(word[0],'v')] = senses
+				elif (tag is 'n'):
+					sense_dict[(word[0],'n')] = senses
+				elif (tag is 'adj'):
+					sense_dict[(word[0],'adj')] = senses
 				else:
-					senses = ''
-					tag = ''
-
-				if ( len(senses) > 0):
-					if (tag is 'v'):
-						sense_dict[(word[0],'v')] = senses
-					elif (tag is 'n'):
-						sense_dict[(word[0],'n')] = senses
-					elif (tag is 'adj'):
-						sense_dict[(word[0],'adj')] = senses
-					else:
-						sense_dict[(word[0], 'adv')] = senses
-		
+					sense_dict[(word[0], 'adv')] = senses
+	
 		return sense_dict
 
 	#TODO
 	def sense_combination(self, senses):
 		'''
-			return a list of possible sense combination
+			params:
+				senses = { 
+					(angry, adj): [Synset('angry.0.1'), Synset('angry.0.2')...],
+					(mad, adj) : [Synset('mad.0.1'), Synset('mad.0.2')...]
+				}
+			
+			Return: 
+				a list of possible sense combination
 		'''
+		# combination = {}
+		# sub_combo = []
+
+		combo = []
+
+		i = 0;
+		for word, sense in senses.iteritems():
+			combo.insert(i, sense)
+			i = i + 1
+
+
+		print combo
+
 		return None
 
 	#TODO
@@ -391,14 +416,17 @@ if __name__ == "__main__":
 	print '\n'
 
 	#get the sense of each word in the context.
-	senses = wsd.get_senses(context_window)
-	print 'Senses of each word'
-	for key, value in senses.iteritems():
-		print key 
-		print value
+	senses_list = []
+	for context in context_window:
+		senses = wsd.get_senses(context)
+		print 'Senses of each word'
+		print senses
 		print ''
+		senses_list.append(senses)
 
-	sense_combo = wsd.sense_combination(senses)
-	print 'Sense combination'
-	print sense_combo
-	print ''
+	for sens in senses_list:
+		wsd.sense_combination(sens)
+
+
+
+	
