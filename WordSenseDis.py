@@ -318,8 +318,7 @@ class WSD:
 	
 		return sense_dict
 
-	#TODO
-	def sense_combination(self, senses):
+	def sense_combination(self, senses, window_size):
 		'''
 			params:
 				senses = { 
@@ -328,22 +327,24 @@ class WSD:
 				}
 			
 			Return: 
-				a list of possible sense combination
+				list = [[a1,a2], [b1, b2] ,[c1,c2]]
+
+				cartesian combination = [ [a1,b1,c1] , [a1,b1,c2] , [a1,b2,c1] ..]
 		'''
-		# combination = {}
-		# sub_combo = []
 
-		combo = []
+		sen_sub_list = []
+		sen_list = []
 
-		i = 0;
-		for word, sense in senses.iteritems():
-			combo.insert(i, sense)
-			i = i + 1
+		for word,sens_list in senses.iteritems():
+			for sens in sens_list:
+				sen_sub_list.append(sens)
+			sen_list.append(sen_sub_list)
+			sen_sub_list = []
 
+		combo_sense_list = []
+		combo_sense_list = list(itertools.product(*sen_list))  # * unpacks the item in the list
 
-		print combo
-
-		return None
+		return combo_sense_list
 
 	#TODO
 	def score_sense(self, sense):
@@ -417,6 +418,8 @@ if __name__ == "__main__":
 
 	#get the sense of each word in the context.
 	senses_list = []
+
+	#context is a sub_list 
 	for context in context_window:
 		senses = wsd.get_senses(context)
 		print 'Senses of each word'
@@ -424,8 +427,12 @@ if __name__ == "__main__":
 		print ''
 		senses_list.append(senses)
 
+    # get a sense combination of each context window
+	combo = []
 	for sens in senses_list:
-		wsd.sense_combination(sens)
+	  	combo = wsd.sense_combination(sens, len(sens))
+	  	print combo
+	  	print 'total of %d combinations found\n' % (len(combo))
 
 
 
