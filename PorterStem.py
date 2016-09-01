@@ -279,7 +279,7 @@ class StemWord:
         else:
             return word
 
-    def step_4(self, word):
+    def step_4(self, word, tag=''):
         '''
             Rules:
                 () NDER -> return word
@@ -303,7 +303,7 @@ class StemWord:
                 (m > 1) IVE     ->
                 (m > 1) IZE     ->
         '''
-        parse_stem = re.findall(r'^(.*?)(NDER|AL|ANCE|ENCE|ER|IC|ABLE|IBLE|ANT|EMENT|MENT|ENT|OU|ISM|ATE|ITI|OUS|IVE|IZE|ION)$', word)
+        parse_stem = re.findall(r'^(.*?)(AL|ANCE|ENCE|ER|IC|ABLE|IBLE|ANT|EMENT|MENT|ENT|OU|ISM|ATE|ITI|OUS|IVE|IZE|ION)$', word)
 
         #print parse_stem
         if len(parse_stem) == 0:
@@ -311,7 +311,7 @@ class StemWord:
 
         if parse_stem[0][1] != 'ION':
 
-            if (parse_stem[0][1] == 'NDER'):
+            if ( (parse_stem[0][1] == 'ER') and (tag == 'NN')):
                 return word
 
             consonant = self.to_consonant_vowel(parse_stem[0][0])
@@ -470,7 +470,7 @@ class StemWord:
         step_1c = self.step_1c(step_1b)
         step_2 = self.step_2(step_1c)
         step_3 = self.step_3(step_2)
-        step_4 = self.step_4(step_3)
+        step_4 = self.step_4(step_3, tag)
         step_5a = self.step_5a(step_4)
         stem = self.step_5b(step_5a)
 
