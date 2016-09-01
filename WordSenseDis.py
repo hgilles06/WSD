@@ -353,7 +353,7 @@ class WSD:
 		'''
 		return None
 
-	def get_hypo(self, synset):
+	def get_hypo_hype(self, synset, opt = ''):
 		'''
 			Params:
 				synset is something like 'sentence.n.02' => 
@@ -362,49 +362,28 @@ class WSD:
 					* 02 means it is a 2nd noun in the list.
 			Return:
 				return a string that is concatenation of
-				gloss of hyponyms
+				gloss of hyponyms or hypernyms
 		'''
-		hypos = []
-		ret_hypo = {}
-		hypo_concat = ''
+		hypos_or_hypes = []
+		ret_str = ''
 		
-		hypos = synset.hyponyms()
-		print "Hypo for "+ str(synset) +"is: "
-		print hypos
+		if (opt is 'hypo'):
+			hypos_or_hypes = synset.hyponyms()
+			print "Hypo for "+ str(synset) +"is: "
+		elif (opt is 'hype'):
+			hypos_or_hypes = synset.hypernyms()
+			print "Hype for "+ str(synset) +"is: "
+		else:
+			return ret_str
+
+		print hypos_or_hypes
 		print ''
 
-		for hypo_def in hypos:
-			hypo_concat += str(hypo_def.definition())
-			hypo_concat += '; '
+		for item in hypos_or_hypes:
+			ret_str += str(item.definition())
+			ret_str += '; '
 
-		return hypo_concat
-
-	def get_hype(self, synset):
-		'''
-			Params:
-				synset is something like 'sentence.n.02' => 
-					* 'sentence' is a word
-					* n means noun
-					* 02 means it is a 2nd noun in the list.
-			Return:
-				return a string that is concatenation of
-				gloss of hypernyms
-		'''
-		hypes = []
-		ret_hype ={}
-		hype_concat = ''
-
-		hypes = synset.hypernyms()
-		print "Hypes for "+ str(synset) +" is: "
-		print hypes
-		print ''
-
-		for hype in hypes:
-			hype_concat += str(hype.definition())
-			hype_concat += '; '
-
-		return hype_concat
-
+		return ret_str
 
 if __name__ == "__main__":
 	wsd = WSD()
@@ -486,8 +465,8 @@ if __name__ == "__main__":
 		for word in context:
 			#print word
 			gloss = str(word.definition())
-			hypo = wsd.get_hypo(word)
-			hype = wsd.get_hype(word)
+			hypo = wsd.get_hypo_hype(word, 'hypo')
+			hype = wsd.get_hypo_hype(word, 'hype')
 			gloss_hype_hypo.append( [gloss, hypo, hype])
 		gloss_hype_hypo_dict[context] = gloss_hype_hypo
 		gloss_hype_hypo = []
