@@ -282,6 +282,7 @@ class StemWord:
     def step_4(self, word):
         '''
             Rules:
+                () NDER -> return word
                 (m > 1) AL      ->
                 (m > 1) ANCE    ->
                 (m > 1) ENCE    ->
@@ -302,13 +303,16 @@ class StemWord:
                 (m > 1) IVE     ->
                 (m > 1) IZE     ->
         '''
-        parse_stem = re.findall(r'^(.*?)(AL|ANCE|ENCE|ER|IC|ABLE|IBLE|ANT|EMENT|MENT|ENT|OU|ISM|ATE|ITI|OUS|IVE|IZE|ION)$', word)
+        parse_stem = re.findall(r'^(.*?)(NDER|AL|ANCE|ENCE|ER|IC|ABLE|IBLE|ANT|EMENT|MENT|ENT|OU|ISM|ATE|ITI|OUS|IVE|IZE|ION)$', word)
 
         #print parse_stem
         if len(parse_stem) == 0:
             return word
 
         if parse_stem[0][1] != 'ION':
+
+            if (parse_stem[0][1] == 'NDER'):
+                return word
 
             consonant = self.to_consonant_vowel(parse_stem[0][0])
             
@@ -442,7 +446,7 @@ class StemWord:
 
         return ret_list
 
-    def do_stem(self, word):
+    def do_stem(self, word, tag=''):
         '''
             A problem with porter stemer is that
             when the word is ending with -ies,
