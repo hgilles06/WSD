@@ -379,7 +379,6 @@ class WSD:
 
 		return hypo_concat
 
-	#TODO
 	def get_hype(self, synset):
 		'''
 			Params:
@@ -495,10 +494,15 @@ if __name__ == "__main__":
 
 	for key,value in gloss_hype_hypo_dict.iteritems():
 		print "key is", 
-		print key
+		print key,
+		print ' length of the value is %d' % (len(value)) 
 		print ''
 		print value
 		print ''
-		
+
+	
+	# need to compare two items at a time.
+	# [[a's gloss, a's hypo , a's hype], [b's gloss, b's hypo, b's hype], [c's gloss, c's hype, c's hypo]  ]
+	#  we want to compare [0] & [1] then [1] & [2]
 
 	
