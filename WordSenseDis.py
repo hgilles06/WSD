@@ -78,7 +78,7 @@ class WSD:
 					7) a_2 - b_1 - c_2    F T F
 					8) a_2 - b_1 - c_1    F T T
 
-			Word's hyponyms and hypernyms, put them into a concatanated
+			Word's hyponyms/troponym and hypernyms, put them into a concatanated
 			string.
 
 			ex. synset('conviction.n.02').hyponyms()
@@ -178,7 +178,7 @@ class WSD:
 						upper_case_check = False
 
 
-					upper_case = sw().do_stem(word[0].upper())
+					upper_case = sw().do_stem(word[0].upper(), word[1])
 
 					if (upper_case_check == True):
 						lower_case = upper_case[0] + upper_case[1:].lower()
@@ -353,24 +353,58 @@ class WSD:
 		'''
 		return None
 
-	#TODO
-	def hypo_concat(self, word):
+	def get_hypo(self, synset):
 		'''
-			return a string that is concatenation of
-			gloss of hyponyms
+			Params:
+				synset is something like 'sentence.n.02' => 
+					* 'sentence' is a word
+					* n means noun
+					* 02 means it is a 2nd noun in the list.
+			Return:
+				return a string that is concatenation of
+				gloss of hyponyms
 		'''
-		return None
+		hypos = []
+		ret_hypo = {}
+		hypo_concat = ''
+		
+		hypos = synset.hyponyms()
+		print "Hypo for "+ str(synset) +"is: "
+		print hypos
+		print ''
+
+		for hypo_def in hypos:
+			hypo_concat += str(hypo_def.definition())
+			hypo_concat += '; '
+
+		return hypo_concat
 
 	#TODO
-	def hype_concat(self, word):
+	def get_hype(self, synset):
 		'''
-			returna string that is concatenation of
-			gloss of hypernym
+			Params:
+				synset is something like 'sentence.n.02' => 
+					* 'sentence' is a word
+					* n means noun
+					* 02 means it is a 2nd noun in the list.
+			Return:
+				return a string that is concatenation of
+				gloss of hypernyms
 		'''
-		return None
+		hypes = []
+		ret_hype ={}
+		hype_concat = ''
 
+		hypes = synset.hypernyms()
+		print "Hypes for "+ str(synset) +" is: "
+		print hypes
+		print ''
 
+		for hype in hypes:
+			hype_concat += str(hype.definition())
+			hype_concat += '; '
 
+		return hype_concat
 
 
 if __name__ == "__main__":
@@ -431,9 +465,40 @@ if __name__ == "__main__":
 	combo = []
 	for sens in senses_list:
 	  	combo = wsd.sense_combination(sens, len(sens))
-	  	print combo
+	  	print "Possible sense combination\n"
+	  	for c in combo:
+	  		print c
+	  		print ''
 	  	print 'total of %d combinations found\n' % (len(combo))
 
 
+	# for each sense combination
+	# we need to get the hype and hypo of each sense in combination
+	gloss_hype_hypo = []
+	gloss_hype_hypo_dict= {}
+	gloss =''
+	hype = ''
+	hypo = ''
+
+	# combo has all combination
+	# context is one combination
+	# context has 3 synsets/words.
+	for context in combo:
+		for word in context:
+			#print word
+			gloss = str(word.definition())
+			hypo = wsd.get_hypo(word)
+			hype = wsd.get_hype(word)
+			gloss_hype_hypo.append( [gloss, hypo, hype])
+		gloss_hype_hypo_dict[context] = gloss_hype_hypo
+		gloss_hype_hypo = []
+
+	for key,value in gloss_hype_hypo_dict.iteritems():
+		print "key is", 
+		print key
+		print ''
+		print value
+		print ''
+		
 
 	
