@@ -110,11 +110,11 @@ class WSD:
 		self.query = []
 		
 		self.stop_word = ['I', 'a', 'an', 'as', 'at', 'by',
-		 				'he', 'his', 'me', 'or', 'thou',
-		 				'us', 'who', 'of', 'and', 'the', 'she', 'She', 'He', 
+		 				  'his', 'me', 'or', 'thou',
+		 				  'us', 'who', 'and', 'the', 'She', 'He', 
 		 				'this', 'that', 'these', 'those', 'is', 'They', 'Their']
 		
-		self.symbols = ['>','<','.',',','!','?','-','\'','--']
+		self.symbols = ['>','<','.',',','!','?','-','\'','--', ')', '(']
 		
 		# load up the brill tagger 
 		f = open('brill_tagger.pickle', 'rb')
@@ -211,7 +211,7 @@ class WSD:
 		
 		return brill_tagger.tag(word_list)
 
-	def remove_stop_word(self, tagged_list):
+	def remove_stop_word_with_tag(self, tagged_list):
 		'''
 			param:
 				tagged_list : [ [('she', tag), ('is', tag), ('angry', tag)] ....]
@@ -230,6 +230,13 @@ class WSD:
 
 		return sent_list
 
+	def remove_symbols_and_stop(self, word_list):
+		ret_list = []
+		for word in word_list:
+			if (word not in self.symbols) and (word not in self.stop_word):
+				ret_list.append(word)
+
+		return ret_list
 
 	def get_context_window(self, sent_lists, window_size=3):
 		'''
@@ -347,13 +354,6 @@ class WSD:
 
 		return combo_sense_list
 
-	#TODO
-	def score_sense(self, sense):
-		'''
-			1) use square score method
-		'''
-		return None
-
 	def get_hypo_hype(self, synset, opt = ''):
 		'''
 			Params:
@@ -423,13 +423,66 @@ class WSD:
 			sen1 = pair[0]
 			sen2 = pair[1]
 			total_score = total_score + self.compute_overlap(sen1, sen2)
-			break
+			break  # remove this line after completing compute_overlap
 
 		print total_score
 
+	#TODO
 	def compute_overlap(self, sen1, sen2):
+
+		sen1_word_list = word_tokenize(sen1)
+		sen2_word_list = word_tokenize(sen2)
+
+		edit_sen1 = self.remove_symbols_and_stop(sen1_word_list)
+		edit_sen2 = self.remove_symbols_and_stop(sen2_word_list)
+
+		edit_sen1_str = ' '.join(edit_sen1)
+		edit_sen2_str = ' '.join(edit_sen2)
+
+		print edit_sen1_str
+		print edit_sen2_str
+
+		temp = ''
+		overlap_lst = []
+		overlap_removed_sen2 = ''
+		for word in edit_sen1_str.split():
+			temp = temp + word
+
+			if (edit_sen2_str.count(temp) > 0):
+				temp = temp + ' '
+			else:		
+				temp = temp[:-len(word)]  # remove the current word from the string
+				temp = temp.strip()  # remove leading and trailing spaces
+
+				overlap_removed_sen2 = edit_sen2_str.replace(temp, "", 1)  # replace the first item that overlap
+				edit_sen2_str = overlap_removed_sen2
+				edit_sen2_str = edit_sen2_str.strip()
+
+				if ( len(temp) > 0):
+					overlap_lst.append(temp)
+
+				temp = ''
+
+		print "edit_sen2_str is : " + edit_sen2_str +"\n"
+		# if temp is not empty, means there was a overlap at the end
+		# else there was no overlap at the end 
+		if (len(temp) > 0):
+			temp = temp.strip()
+			overlap_lst.append(temp)
+
+		print overlap_lst
+
+		total_score = 0
+		overlap = 0
+		for sen in overlap_lst:
+			for item in sen.split():
+				#print item
+				overlap = overlap + 1
+			overlap = overlap ** 2
+			total_score = total_score + overlap
+			overlap = 0
 		
-		return None
+		return total_score
 
 
 
@@ -466,7 +519,7 @@ if __name__ == "__main__":
 
 	# remove the stopword and symbols from the list
 	print 'Removed stop word from the list'
-	removed_stop_list = wsd.remove_stop_word(stemmed_list)
+	removed_stop_list = wsd.remove_stop_word_with_tag(stemmed_list)
 	print removed_stop_list
 	print '\n'
 
