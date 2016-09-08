@@ -474,14 +474,14 @@ class StemWord:
         step_5a = self.step_5a(step_4)
         stem = self.step_5b(step_5a)
 
-        # we want to search the final stem in the corpus
-        # if we cannot find it in there, then
-        # we just want to use the original word.
-        # but gotta figure out how to reduce the import time.
+        # because we sometimes get an akward result
+        # we want to lemmatize the word so that we get
+        # the better root form of the word
         if (len(wn.synsets(stem)) != 0):
-            return stem
+            return str(self.lemmatizer.lemmatize(stem.lower()))
         else:
             return word
+        
 
 if __name__ == "__main__":
     user_input = raw_input()
