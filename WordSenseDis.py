@@ -7,6 +7,7 @@ from collections import OrderedDict
 import re
 import pickle
 import itertools
+import sys
 
 class WSD:
 	'''
@@ -379,11 +380,58 @@ class WSD:
 		print hypos_or_hypes
 		print ''
 
+		# we want to concatanate hyponyms to hyponyms and hypernyms to hypernyms together.
+		# each hyponym or hypernym is separated by semi-colon
 		for item in hypos_or_hypes:
 			ret_str += str(item.definition())
 			ret_str += '; '
 
 		return ret_str
+
+	def overlap_score(self, sense_combo):
+		# check if the sense combo has 3 items or less in the list
+		# first and last item are the non-target word in the context window
+		print "------ Inside the overlap_score --------\n"
+		last_item = []
+		target_item = []
+		first_item = []
+		if( len(sense_combo) is 3):
+			first_item = sense_combo[0]
+			target_item = sense_combo[1]
+			last_item = sense_combo[-1]
+
+		print first_item
+		print ''
+		print target_item
+		print ''
+		print last_item
+		print ''
+
+		# compare first and the target word first
+		lst_first_target_item = []
+		lst_first_target_item.append(first_item)
+		lst_first_target_item.append(target_item)
+
+		# cartesian product comparing
+		compare_list = []
+		compare_list = list(itertools.product(*lst_first_target_item))
+
+		sen1 = ''
+		sen2 = ''
+		total_score = 0
+		for pair in compare_list:
+			sen1 = pair[0]
+			sen2 = pair[1]
+			total_score = total_score + self.compute_overlap(sen1, sen2)
+			break
+
+		print total_score
+
+	def compute_overlap(self, sen1, sen2):
+		
+		return None
+
+
 
 if __name__ == "__main__":
 	wsd = WSD()
@@ -449,7 +497,6 @@ if __name__ == "__main__":
 	  		print ''
 	  	print 'total of %d combinations found\n' % (len(combo))
 
-
 	# for each sense combination
 	# we need to get the hype and hypo of each sense in combination
 	gloss_hype_hypo = []
@@ -478,6 +525,8 @@ if __name__ == "__main__":
 		print ''
 		print value
 		print ''
+		wsd.overlap_score(value)
+		break
 
 	
 	# need to compare two items at a time.
