@@ -463,7 +463,6 @@ class WSD:
 
 				temp = ''
 
-		print "edit_sen2_str is : " + edit_sen2_str +"\n"
 		# if temp is not empty, means there was a overlap at the end
 		# else there was no overlap at the end 
 		if (len(temp) > 0):
@@ -583,7 +582,7 @@ if __name__ == "__main__":
 
 	
 	# need to compare two items at a time.
-	# [[a's gloss, a's hypo , a's hype], [b's gloss, b's hypo, b's hype], [c's gloss, c's hype, c's hypo]  ]
+	# [[a's gloss, a's hypo , a's hype], [b's gloss, b's hypo, b's hype], [c's gloss, c's hypo, c's hype]  ]
 	#  we want to compare [0] & [1] then [1] & [2]
 
 	
