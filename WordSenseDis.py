@@ -479,6 +479,7 @@ class WSD:
 				overlap = overlap + 1
 			overlap = overlap ** 2
 			total_score = total_score + overlap
+			print "Score for '%s' is : %d" % (sen,overlap)
 			overlap = 0
 		
 		return total_score
