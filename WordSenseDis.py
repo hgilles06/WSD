@@ -482,13 +482,21 @@ class WSD:
 		for word in edit_sen1_str.split():
 			temp = temp + word
 
-			if (edit_sen2_str.count(temp) > 0):
+			#print "checking for : " + temp + '\n'
+			
+			# must check if a word exist as a whole word, not as a substring of a word
+			# in Regex, \b matches the emptry string at the beginning or end of a word
+			search = re.search(r'\b%s\b' % temp, edit_sen2_str)
+			
+			if ( search):
+				#print "temp is in the second sentence " + temp + "\n"
 				temp = temp + ' '
-			else:		
+			else:
+
 				temp = temp[:-len(word)]  # remove the current word from the string
 				temp = temp.strip()  # remove leading and trailing spaces
 
-				overlap_removed_sen2 = edit_sen2_str.replace(temp, "", 1)  # replace the first item that overlap
+				overlap_removed_sen2 = edit_sen2_str.replace(temp, "", 1)  # replace the first item that overlap in the sentence
 				edit_sen2_str = overlap_removed_sen2
 				edit_sen2_str = edit_sen2_str.strip()
 
@@ -501,7 +509,9 @@ class WSD:
 		# else there was no overlap at the end 
 		if (len(temp) > 0):
 			temp = temp.strip()
-			overlap_lst.append(temp)
+			print temp
+			if (edit_sen2_str.count(temp) > 0):
+				overlap_lst.append(temp)
 
 		print overlap_lst
 
