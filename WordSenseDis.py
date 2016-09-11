@@ -389,7 +389,7 @@ class WSD:
 
 		return ret_str
 
-	def overlap_score(self, sense_combo):
+	def overlap_score(self, sense_combo, context=''):
 		# check if the sense combo has 3 items or less in the list
 		# first and last item are the non-target word in the context window
 		last_item = []
@@ -529,6 +529,25 @@ class WSD:
 		
 		return total_score
 
+	# TODO: return a 
+	def get_gloss_hype_hypo_dict(self, context_combo):
+		'''
+		gloss_hype_hypo_dict = { 
+			context 1: (
+						[ def of synset 1, hypernyms of synset 1, hyponyms of synset 1],
+						
+						[ def of synset 2, hypernyms of synset 2, hyponyms of synset 2],
+
+						[ def of synset 3, hypernyms of synset 3, hyponyms of synset 3 ]
+					  ), 
+			...
+			...
+			...
+			
+			context n: ( )
+		}
+		'''
+		return None
 
 
 if __name__ == "__main__":
@@ -607,7 +626,7 @@ if __name__ == "__main__":
 
 	# combo = [ [context 1], [ context 2] .... [context n]]
 	# context  = [(synset 1 of left non target), (synset 1 of target), (synset 1 of right non target)]
-
+	# TODO: make this into a function
 	for context in combo:
 		for word in context:
 			#print word
@@ -643,7 +662,7 @@ if __name__ == "__main__":
 		print key
 		#print value
 		#print ''
-		score = wsd.overlap_score(value)
+		score = wsd.overlap_score(value, key)
 		print 'score is %d \n' % (score)
 		score_for_context[key] = score
 		score = 0
