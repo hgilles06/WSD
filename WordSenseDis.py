@@ -3,11 +3,12 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from PorterStem import StemWord as sw
 from nltk.data import load
 from nltk.corpus import wordnet as wn
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 import re
 import pickle
 import itertools
 import sys
+
 
 class WSD:
 	'''
@@ -411,19 +412,49 @@ class WSD:
 		lst_first_target_item.append(first_item)
 		lst_first_target_item.append(target_item)
 
+		# compare the target and the last item
+		lst_target_last_item = []
+		lst_target_last_item.append(target_item)
+		lst_target_last_item.append(last_item)
+
+		# compare the left NT and right NT
+		lst_first_last_item = []
+		lst_first_last_item.append(first_item)
+		lst_first_last_item.append(last_item)
+
 		# cartesian product comparing
-		compare_list = []
-		compare_list = list(itertools.product(*lst_first_target_item))
+		compare_list_LT = []
+		compare_list_LT = list(itertools.product(*lst_first_target_item))
 
 		sen1 = ''
 		sen2 = ''
 		sen3 = ''
 		total_score = 0
-		for pair in compare_list:
+
+		# comparing for the Left non target word and the target word
+		for pair in compare_list_LT:
 			sen1 = pair[0]
 			sen2 = pair[1]
 			total_score = total_score + self.compute_overlap(sen1, sen2)
 			#break  # remove this line after completing compute_overlap
+
+		# comparing fot the target word and the right non-target word
+		compare_list_TR = []
+		compare_list_TR = list(itertools.product(*lst_target_last_item))
+
+		for pair in compare_list_TR:
+			sen2 = pair[0]
+			sen3 = pair[1]
+			total_score = total_score + self.compute_overlap(sen2, sen3)
+
+		# comparing the first and the last non target
+		compare_list_LR = []
+		compare_list_LR = list(itertools.product(*lst_first_last_item))
+
+		for pair in compare_list_TR:
+			sen1 = pair[0]
+			sen3 = pair[1]
+			total_score = total_score + self.compute_overlap(sen1, sen3)
 
 		return total_score
 
@@ -441,8 +472,9 @@ class WSD:
 		edit_sen1_str = ' '.join(edit_sen1)
 		edit_sen2_str = ' '.join(edit_sen2)
 
-		#print edit_sen1_str
-		#print edit_sen2_str
+		print 'comparing..\n'
+		print 'sen a: ' + edit_sen1_str + '\n'
+		print 'sen b: ' +edit_sen2_str + '\n'
 
 		temp = ''
 		overlap_lst = []
@@ -553,7 +585,8 @@ if __name__ == "__main__":
 	  		print ''
 	  	print 'total of %d combinations found\n' % (len(combo))
 
-	sys.exit()
+	#sys.exit()
+	
 	# for each sense combination
 	# we need to get the hype and hypo of each sense in combination
 	gloss_hype_hypo = []
@@ -562,9 +595,9 @@ if __name__ == "__main__":
 	hype = ''
 	hypo = ''
 
-	# combo has all combination
-	# context is one combination
-	# context has 3 synsets/words.
+	# combo = [ [context 1], [ context 2] .... [context n]]
+	# context  = [(synset 1 of left non target), (synset 1 of target), (synset 1 of right non target)]
+
 	for context in combo:
 		for word in context:
 			#print word
@@ -575,21 +608,41 @@ if __name__ == "__main__":
 		gloss_hype_hypo_dict[context] = gloss_hype_hypo
 		gloss_hype_hypo = []
 
-	i = 0
-	score = 0
+	'''
+	gloss_hype_hypo_dict = { 
+		context 1: (
+					[ def of synset 1, hypernyms of synset 1, hyponyms of synset 1],
+					
+					[ def of synset 2, hypernyms of synset 2, hyponyms of synset 2],
 
+					[ def of synset 3, hypernyms of synset 3, hyponyms of synset 3 ]
+				  ), 
+		...
+		...
+		...
+		
+		context n: ( )
+	}
+	'''
+	score = 0
+	score_for_context = defaultdict(int)
+
+	i = 0
 	for key,value in gloss_hype_hypo_dict.iteritems():
 		print "\n------ key is --------\n" 
-		print key,
-		print ' length of the value is %d' % (len(value)) 
-		print ''
+		print key
 		#print value
 		#print ''
-		score = score + wsd.overlap_score(value)
+		score = wsd.overlap_score(value)
 		print 'score is %d \n' % (score)
-		
+		score_for_context[key] = score
+		score = 0
 
-	print "\ntotal overlap score is %d " % (score)
+	
+	for key, value in score_for_context.iteritems():
+		print key, value
+		print ''
+	#print "\ntotal overlap score is %d " % (score)
 
 	
 	# need to compare two items at a time.
