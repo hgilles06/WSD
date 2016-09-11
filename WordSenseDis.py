@@ -114,7 +114,7 @@ class WSD:
 		 				  'us', 'who', 'and', 'the', 'She', 'He', 
 		 				'this', 'that', 'these', 'those', 'is', 'They', 'Their']
 		
-		self.symbols = ['>','<','.',',','!','?','-','\'','--', ')', '(']
+		self.symbols = ['>','<','.',',','!','?','-','\'','--', ')', '(', ';']
 		
 		# load up the brill tagger 
 		f = open('brill_tagger.pickle', 'rb')
@@ -391,7 +391,6 @@ class WSD:
 	def overlap_score(self, sense_combo):
 		# check if the sense combo has 3 items or less in the list
 		# first and last item are the non-target word in the context window
-		print "------ Inside the overlap_score --------\n"
 		last_item = []
 		target_item = []
 		first_item = []
@@ -418,17 +417,20 @@ class WSD:
 
 		sen1 = ''
 		sen2 = ''
+		sen3 = ''
 		total_score = 0
 		for pair in compare_list:
 			sen1 = pair[0]
 			sen2 = pair[1]
 			total_score = total_score + self.compute_overlap(sen1, sen2)
-			break  # remove this line after completing compute_overlap
+			#break  # remove this line after completing compute_overlap
 
-		print total_score
+		return total_score
 
 	#TODO
 	def compute_overlap(self, sen1, sen2):
+
+		print "\nCompute_overlap() is called.."
 
 		sen1_word_list = word_tokenize(sen1)
 		sen2_word_list = word_tokenize(sen2)
@@ -439,8 +441,8 @@ class WSD:
 		edit_sen1_str = ' '.join(edit_sen1)
 		edit_sen2_str = ' '.join(edit_sen2)
 
-		print edit_sen1_str
-		print edit_sen2_str
+		#print edit_sen1_str
+		#print edit_sen2_str
 
 		temp = ''
 		overlap_lst = []
@@ -473,6 +475,7 @@ class WSD:
 
 		total_score = 0
 		overlap = 0
+
 		for sen in overlap_lst:
 			for item in sen.split():
 				#print item
@@ -550,6 +553,7 @@ if __name__ == "__main__":
 	  		print ''
 	  	print 'total of %d combinations found\n' % (len(combo))
 
+	sys.exit()
 	# for each sense combination
 	# we need to get the hype and hypo of each sense in combination
 	gloss_hype_hypo = []
@@ -571,15 +575,21 @@ if __name__ == "__main__":
 		gloss_hype_hypo_dict[context] = gloss_hype_hypo
 		gloss_hype_hypo = []
 
+	i = 0
+	score = 0
+
 	for key,value in gloss_hype_hypo_dict.iteritems():
-		print "key is", 
+		print "\n------ key is --------\n" 
 		print key,
 		print ' length of the value is %d' % (len(value)) 
 		print ''
-		print value
-		print ''
-		wsd.overlap_score(value)
-		break
+		#print value
+		#print ''
+		score = score + wsd.overlap_score(value)
+		print 'score is %d \n' % (score)
+		
+
+	print "\ntotal overlap score is %d " % (score)
 
 	
 	# need to compare two items at a time.
