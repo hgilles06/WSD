@@ -3,12 +3,14 @@ from nltk.probability import FreqDist, ConditionalFreqDist
 from nltk.tbl.template import Template  # <- ??
 from nltk.tag.brill import Pos, Word
 
+
 def word_tag_model(words, tagged_words, limit=200):
 	fd = FreqDist(words)
 	cdf = ConditionalFreqDist(tagged_words)
 	most_freq = (word for word, count in fd.most_common(limit))
 
 	return dict((word, cfd[word].max()) for word in most_freq)
+
 
 def backoff_tagger(train_sents, tagger_classes, backoff=None):
 	'''
@@ -27,6 +29,7 @@ def backoff_tagger(train_sents, tagger_classes, backoff=None):
 		backoff = cls(train_sents, backoff=backoff)
 
 	return backoff
+
 
 def train_brill_tagger(initial_tagger, train_sents, **kwargs):
 	'''
