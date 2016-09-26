@@ -284,6 +284,8 @@ class WSD:
 		target_item = []
 		first_item = []
 
+		print "\n\n****** [Synset definition, Synset's hyponyms, Synset's Hypernyms] ****** \n\n"
+
 		if(len(sense_combo) is 3):
 			print 'sense_combo has 3 items\n'
 			first_item = sense_combo[0]
@@ -505,6 +507,8 @@ if __name__ == "__main__":
 		for synset_combo in synsets_combo_list:
 			synset_combo_hypo_hype = wsd.get_def_hypo_hype(synset_combo)
 			wsd.overlap_score(synset_combo_hypo_hype)
+
+
 
 '''
 	print "context_window: ",
