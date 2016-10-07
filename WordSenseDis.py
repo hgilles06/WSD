@@ -291,18 +291,23 @@ class WSD:
 			first_item = sense_combo[0]
 			target_item = sense_combo[1]
 			last_item = sense_combo[-1]
+			print "\n ** First Item **\n"
 			print first_item
 			print ''
+			print "\n ** Target Item **\n"
 			print target_item
 			print ''
+			print "\n ** Last Item **\n"
 			print last_item
 			print ''
 		elif (len(sense_combo) is 2):
 			print 'sense_combo has 2 items\n'
 			first_item = sense_combo[0]
 			target_item = sense_combo[1]
+			print "\n ** First Item **\n"
 			print first_item
 			print ''
+			print "\n ** Target Item **\n"
 			print target_item
 			print ''
 		elif (len(sense_combo) is 1):
@@ -310,16 +315,19 @@ class WSD:
 			return 0
 
 		# compare first and the target word first
+		print "Comparing the first and target.."
 		lst_first_target_item = []
 		lst_first_target_item.append(first_item)
 		lst_first_target_item.append(target_item)
 
 		# compare the target and the last item
+		print "Comparing the target and the last"
 		lst_target_last_item = []
 		lst_target_last_item.append(target_item)
 		lst_target_last_item.append(last_item)
 
 		# compare the left NT and right NT
+		print "Comparing the first and last"
 		lst_first_last_item = []
 		lst_first_last_item.append(first_item)
 		lst_first_last_item.append(last_item)
@@ -332,7 +340,7 @@ class WSD:
 		for a in compare_list_LT:
 			print a
 			print ''
-		sys.exit()
+		
 		sen1 = ''
 		sen2 = ''
 		sen3 = ''
@@ -438,153 +446,5 @@ class WSD:
 			overlap = 0
 
 		print "Total score : %d" % (total_score)
-		print "\n---- Computer_overlap() finished ----\n"
+		print "\n---- Compute_overlap() finished ----\n"
 		return total_score
-
-
-if __name__ == "__main__":
-	wsd = WSD()
-	user_input = raw_input()
-	print '\n'
-
-	# setence tokenize
-	sen_list = wsd.tokenize_sen(user_input)
-	print 'Sentence token: '
-	print sen_list
-	print '\n'
-
-	# word tokenize
-	word_list = wsd.tokenize_word(sen_list)
-	print 'Word token: '
-	print word_list
-	print '\n'
-
-	# tag each word in the sentence
-	tagged_list = []
-	for sent in word_list:
-		tagged_list.append(wsd.word_tagger(sent))
-	print 'Tagged word list'
-	print tagged_list
-	print '\n'
-
-	# stem each word
-	stemmed_list = wsd.porter_stem(tagged_list)
-	print 'After porter stemmed'
-	print stemmed_list
-	print '\n'
-
-	# remove the stopword and symbols from the list
-	print 'Removed stop word from the list'
-	removed_stop_list = wsd.remove_stop_word_with_tag(stemmed_list)
-	print removed_stop_list
-	print '\n'
-
-	# get a Target word and non-target word in the context window size of 3
-	context_window = wsd.get_context_window(removed_stop_list)
-	print 'Context window'
-	print context_window
-	print '\n'
-
-	# get the sense of each word in the context.
-	senses_list = []
-	synsets_combo_list = []
-	# context is a sub_list
-	# TODO: get score for each context in context_window
-	# context is a three words that has to be disambiguated..
-	for context in context_window:
-		# get synset for each word in the context
-		synsets_of_context = wsd.get_senses(context)
-		print '\nContext:',
-		print context
-		print '\nSynsets of each word in context'
-		print synsets_of_context
-		print '\nlength of all synsets: %d' % (len(synsets_of_context))
-		print '\nSynsets combination'
-		# get all possible combination with found synsets
-		synsets_combo_list = wsd.sense_combination(synsets_of_context)
-		print synsets_combo_list
-		print '\nTotal of combination: %d' % (len(synsets_combo_list))
-		for synset_combo in synsets_combo_list:
-			synset_combo_hypo_hype = wsd.get_def_hypo_hype(synset_combo)
-			wsd.overlap_score(synset_combo_hypo_hype)
-
-
-
-'''
-	print "context_window: ",
-	print context_window
-	print '\nsense list: ',
-	print senses_list
-	sys.exit()
-
-	# get a sense combination of each context window
-	combo = []
-	list_of_combo = []
-	for sens in senses_list:
-		print sens
-		sys.exit()
-		combo = wsd.sense_combination(sens, len(sens))
-		print "Possible sense combination\n"
-		for c in combo:
-			print c
-			print ''
-		print 'total of %d combinations found\n' % (len(combo))
-		list_of_combo.append(combo)
-
-	print "length of list of combo: %d" % (len(list_of_combo))
-	# print list_of_combo
-	# sys.exit()
-	# for each sense combination
-	# we need to get the hype and hypo of each sense in combination
-	gloss_hype_hypo = []
-	gloss_hype_hypo_dict = {}
-	gloss = ''
-	hype = ''
-	hypo = ''
-
-	# list_of_combo = [ [combo 1], [combo 2], ... , [combo n]]
-	# combo = combination of three words [ context1, context2, ... , context n]
-	# combo1 : all combination of the synsets of the first three words
-	# combo2 : all combination of the synsets of the next three words
-	# context_i = [(synset 1 of left non target), (synset 1 of target), (synset 1 of right non target)]
-	# TODO: make this into a function
-	for combo in list_of_combo:
-		for context in combo:
-			for word in context:
-				# print word
-				gloss = str(word.definition())
-				hypo = wsd.get_hypo_hype(word, 'hypo')
-				hype = wsd.get_hypo_hype(word, 'hype')
-				gloss_hype_hypo.append([gloss, hypo, hype])
-			gloss_hype_hypo_dict[context] = gloss_hype_hypo
-			gloss_hype_hypo = []
-
-	print gloss_hype_hypo_dict
-	print len(gloss_hype_hypo_dict)
-	
-	score = 0
-	score_for_context = defaultdict(int)
-
-	i = 0
-	for key, value in gloss_hype_hypo_dict.iteritems():
-		print "\n------ key is --------\n"
-		print key
-		print '\n'
-		print value
-		print ''
-		score = wsd.overlap_score(value, key)
-		print 'score is %d \n' % (score)
-		score_for_context[key] = score
-		score = 0
-
-	for key, value in score_for_context.iteritems():
-		print key, value
-		print ''
-
-	print "Total item in the list: %d" % (len(score_for_context))
-	# print "\ntotal overlap score is %d " % (score)
-	# need to compare two items at a time.
-	# [[a's gloss, a's hypo , a's hype], [b's gloss, b's hypo, b's hype], [c's gloss, c's hypo, c's hype] ]
-	#  we want to compare [0] & [1] then [1] & [2]
-'''
-	
